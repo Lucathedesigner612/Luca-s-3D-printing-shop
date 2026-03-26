@@ -3,12 +3,15 @@ import requests
 import stripe
 
 # --- CONFIG ---
-# ⚠️ REPLACE THESE WITH YOUR ACTUAL KEYS
-STRIPE_SECRET_KEY = "sk_test_51..." # Get this from Stripe Dashboard
-MY_EMAIL = "your-email@gmail.com" 
+# This line tells the app to pull the key from the "Secrets" menu you just filled out
+try:
+    stripe.api_key = st.secrets["STRIPE_SECRET_KEY"]
+except:
+    st.error("Missing Stripe Key! Please add STRIPE_SECRET_KEY to your App Secrets.")
 
-stripe.api_key = STRIPE_SECRET_KEY
+MY_EMAIL = "lucagalea612@gmail.com" 
 
+# ... rest of your code ...
 def create_checkout_session(items):
     """Creates a Stripe Checkout session and returns the URL"""
     line_items = []
