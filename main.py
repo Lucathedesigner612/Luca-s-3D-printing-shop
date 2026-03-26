@@ -63,6 +63,9 @@ queue_data = {
 st.table(queue_data)
 
 # --- 2. CUSTOM REQUEST ---
+if st.button(f"Order {p['name']}", key=p['name']):
+                st.toast(f"Added {p['name']} to your request!")
+# <-- Make sure there is no extra code here that isn't indented!
 elif menu == "Custom Request":
     st.title("📩 Custom Print Request")
     st.write("Have your own STL file? Upload it or describe it here.")
