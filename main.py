@@ -81,7 +81,7 @@ with st.expander("🔍 View 3D Model (Interactive)", expanded=True):
 
 if menu == "Browse Catalog":
     st.title("🚀 Luca's 3D Inventory")
-      st.divider()  # ERROR: This is indented 6 spaces instead of 4!
+    st.divider()  # ERROR: This is indented 6 spaces instead of 4!
 
     # PRODUCTS LIST
     products = [
