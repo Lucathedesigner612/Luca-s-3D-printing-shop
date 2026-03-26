@@ -2,29 +2,22 @@ import streamlit as st
 import requests
 import stripe
 
-# --- 1. SAFE LIBRARY IMPORTS ---
-try:
-    from stl_to_streamlit import stl_to_streamlit
-except ImportError:
-    stl_to_streamlit = None
-
-# --- 2. CONFIG & SECRETS ---
-# Ensure STRIPE_SECRET_KEY is in your Streamlit Cloud Secrets!
-try:
+# --- CONFIG & SECRETS ---
+# Ensure "STRIPE_SECRET_KEY" is added to your Streamlit Cloud Secrets!
+if "STRIPE_SECRET_KEY" in st.secrets:
     stripe.api_key = st.secrets["STRIPE_SECRET_KEY"]
-except:
+else:
     stripe.api_key = None
 
-MY_EMAIL = "your-email@gmail.com" # <--- Update this!
+MY_EMAIL = "your-email@gmail.com" # <--- Update this to your real email
 
-# --- 3. SESSION STATE (APP MEMORY) ---
+# --- SESSION STATE (Memory) ---
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-# --- 4. PAGE SETUP ---
 st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
-# --- 5. SIDEBAR NAVIGATION (CRITICAL: Define 'menu' here first!) ---
+# --- SIDEBAR NAVIGATION ---
 st.sidebar.title("🛠️ Luca's 3D Lab")
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
 
@@ -34,36 +27,28 @@ st.sidebar.subheader("🛒 Your Cart")
 if not st.session_state.cart:
     st.sidebar.write("Your cart is empty.")
 else:
+    total_cart = 0
     for i, item in enumerate(st.session_state.cart):
         st.sidebar.write(f"**{item['display_name']}**")
         st.sidebar.caption(f"€{item['price']}")
+        total_cart += item['price']
+    
+    st.sidebar.write(f"**Total: €{total_cart}**")
     
     if st.sidebar.button("🗑️ Clear Cart"):
         st.session_state.cart = []
         st.rerun()
 
-# --- 6. PAGE LOGIC ---
-
-# PAGE A: BROWSE CATALOG
+# --- PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
-    st.title("🚀 Featured Prints")
+    st.title("🚀 Custom 3D Prints")
+    st.write("Select your items and choose your favorite filament colors.")
     
-    # 3D STL Viewer Section
-    with st.expander("🔍 View 3D Model (Interactive)", expanded=True):
-        if stl_to_streamlit:
-            st.write("Rotate and zoom to inspect the model.")
-            # Replace this URL with your own Raw GitHub STL link
-            stl_url = "https://raw.githubusercontent.com/thevahidal/streamlit-stl/main/examples/models/deer.stl"
-            stl_to_streamlit(stl_url)
-        else:
-            st.info("3D Viewer is initializing... Refresh in 30 seconds.")
-
-    st.divider()
-
-    # Product Data
+    # Simple Product List
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500"},
-        {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"}
+        {"name": "6mm Cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"},
+        {"name": "Custom Keyring", "price": 3, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=300"}
     ]
     
     colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "✨ Silk Gold", "🔵 Galaxy Blue"]
@@ -74,22 +59,24 @@ if menu == "Browse Catalog":
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             
-            # Selection
-            selected_color = st.selectbox(f"Color ({p['name']})", colors, key=f"col_{i}")
+            # Color Selector
+            selected_color = st.selectbox(f"Select Color ({p['name']})", colors, key=f"col_{i}")
             st.write(f"**Price: €{p['price']}**")
             
-            if st.button(f"Add to Cart", key=f"add_{i}"):
-                new_item = p.copy()
-                new_item['display_name'] = f"{p['name']} - {selected_color}"
+            if st.button(f"Add {p['name']} to Cart", key=f"btn_{i}"):
+                new_item = {
+                    "display_name": f"{p['name']} ({selected_color})",
+                    "price": p["price"]
+                }
                 st.session_state.cart.append(new_item)
                 st.toast(f"Added {new_item['display_name']}!")
                 st.rerun()
 
-# PAGE B: CHECKOUT
+# --- PAGE: CHECKOUT ---
 elif menu == "Checkout":
     st.title("💳 Secure Checkout")
     
-    # Check for Stripe success/cancel params
+    # Handle Stripe redirect success/cancel
     qp = st.query_params
     if qp.get("payment") == "success":
         st.balloons()
@@ -97,24 +84,25 @@ elif menu == "Checkout":
         st.session_state.cart = []
         st.stop()
     elif qp.get("payment") == "cancel":
-        st.warning("❌ Payment cancelled.")
+        st.warning("❌ Payment was cancelled.")
 
     if not st.session_state.cart:
-        st.info("Your cart is empty.")
+        st.info("Your cart is empty! Head back to the catalog to add items.")
     else:
-        total = sum(item['price'] for item in st.session_state.cart)
         st.write("### Review Your Order:")
+        total = sum(item['price'] for item in st.session_state.cart)
         for item in st.session_state.cart:
             st.write(f"- {item['display_name']}: €{item['price']}")
         
         st.divider()
-        st.write(f"### Total: €{total}")
+        st.write(f"### Total Amount: €{total}")
 
         if st.button("Generate Payment Link"):
             if not stripe.api_key:
-                st.error("Stripe is not configured. Add your Secret Key to Streamlit Secrets!")
+                st.error("Stripe Secret Key missing! Add it to Streamlit Secrets.")
             else:
                 try:
+                    # Prepare Stripe items
                     line_items = [{
                         'price_data': {
                             'currency': 'eur',
@@ -124,18 +112,32 @@ elif menu == "Checkout":
                         'quantity': 1,
                     } for item in st.session_state.cart]
 
+                    # Create Stripe Session
                     session = stripe.checkout.Session.create(
                         payment_method_types=['card'],
                         line_items=line_items,
                         mode='payment',
+                        # IMPORTANT: Update this URL to your actual Streamlit URL
                         success_url='https://luca-s-3d-printing-shop.streamlit.app/?payment=success',
                         cancel_url='https://luca-s-3d-printing-shop.streamlit.app/?payment=cancel',
                     )
                     
+                    # Blue Checkout Button
                     st.markdown(f"""
                         <a href="{session.url}" target="_blank">
-                            <button style="background-color: #6772E5; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; width: 100%;">
-                                Click to Pay €{total}
+                            <button style="
+                                background-color: #6772E5;
+                                color: white;
+                                padding: 15px 32px;
+                                text-align: center;
+                                font-size: 16px;
+                                margin: 10px 0px;
+                                cursor: pointer;
+                                border: none;
+                                border-radius: 8px;
+                                width: 100%;
+                                ">
+                                Pay €{total} Now
                             </button>
                         </a>
                     """, unsafe_allow_html=True)
