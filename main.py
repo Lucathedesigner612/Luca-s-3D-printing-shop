@@ -53,21 +53,49 @@ if st.sidebar.button("Clear Cart"):
 # --- MAIN NAVIGATION ---
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
 
+from streamlit_stl import stl_viewer # Make sure this is in requirements.txt
+
 if menu == "Browse Catalog":
     st.title("🚀 Luca's 3D Inventory")
+    
+    # 1. THE 3D PREVIEWER (Feature your best model)
+    st.subheader("🔍 3D Model Inspector")
+    st.info("Rotate and zoom to see the print quality before you buy!")
+    
+    # You can replace this URL with a link to your own .stl file on GitHub
+    test_stl_url = "https://raw.githubusercontent.com/thevahidal/streamlit-stl/main/examples/models/deer.stl"
+    
+    stl_viewer(test_stl_url, color="#FF4B4B")
+    
+    st.divider()
+
+    # 2. THE CATALOG WITH COLOR SELECTION
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500"},
         {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"}
     ]
     
+    # Available Filaments
+    colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "✨ Silk Gold", "🔵 Galaxy Blue"]
+
     col1, col2 = st.columns(2)
     for i, p in enumerate(products):
         with (col1 if i % 2 == 0 else col2):
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
-            st.write(f"Price: €{p['price']}")
-            if st.button(f"Add {p['name']}", key=f"add_{i}"):
-                st.session_state.cart.append(p)
+            
+            # 3. COLOR DROPDOWN
+            chosen_color = st.selectbox(f"Select Filament for {p['name']}", colors, key=f"color_{i}")
+            
+            st.write(f"**Price:** €{p['price']}")
+            
+            if st.button(f"Add {p['name']} to Cart", key=f"add_{i}"):
+                # We save the chosen color into the cart item
+                item_to_add = p.copy()
+                item_to_add['name'] = f"{p['name']} ({chosen_color})"
+                
+                st.session_state.cart.append(item_to_add)
+                st.toast(f"Added {item_to_add['name']}!")
                 st.rerun()
 elif menu == "Checkout":
     st.title("💳 Secure Checkout")
