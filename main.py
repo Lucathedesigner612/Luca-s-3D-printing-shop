@@ -35,23 +35,19 @@ if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     
     products = [
-        {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500", "desc": "Display model."},
-        {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500", "desc": "Precision parts."}
+        {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500"},
+        {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"}
     ]
     
     col1, col2 = st.columns(2)
     
-    # This loop starts the "room" where 'p' lives
     for i, p in enumerate(products):
         target_col = col1 if i % 2 == 0 else col2
-        
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
-            
-            # LINE 63: This MUST be indented 12 spaces (3 tabs) from the left edge.
-            # It must line up perfectly with 'st.write' above it.
+            # THIS LINE BELOW IS LINE 63 - IT MUST BE INDENTED LIKE THIS
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
 
@@ -59,23 +55,16 @@ if menu == "Browse Catalog":
 elif menu == "Custom Request":
     st.title("📩 Custom Print Request")
     st.write("Fill out the form below for a quote.")
-if st.button(f"Order {p['name']}", key=p['name']):
-                st.toast(f"Added {p['name']} to your request!")
-# <-- Make sure there is no extra code here that isn't indented!
-elif menu == "Custom Request":
-    st.title("📩 Custom Print Request")
-    st.write("Have your own STL file? Upload it or describe it here.")
     
-    with st.form("custom_form"):
-        name = st.text_input("Full Name")
-        email = st.text_input("Contact Email / WhatsApp")
-        color = st.selectbox("Filament Color", ["Matte Black", "Silk Gold", "Electric Blue", "Neon Green"])
-        details = st.text_area("Describe your project (size, usage, etc.)")
-        
-        submitted = st.form_submit_button("Submit Request")
-        if submitted:
-            st.balloons()
-            st.success("Request Sent! I'll get back to you with a quote within 24 hours.")
+    contact = st.text_input("Your Email or Phone")
+    details = st.text_area("Describe what you want to print")
+    uploaded_file = st.file_uploader("Upload STL file (optional)")
+    
+    if st.button("Submit Request"):
+        if contact and details:
+            st.success("Request sent! Luca will contact you soon.")
+        else:
+            st.error("Please fill in your contact info and details.")
 
 # --- 3. PRICING CALCULATOR ---
 elif menu == "Pricing Calculator":
