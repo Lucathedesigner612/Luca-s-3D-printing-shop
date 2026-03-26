@@ -79,7 +79,9 @@ with st.expander("🔍 View 3D Model (Interactive)", expanded=True):
         # The new library uses this command:
         stl_to_streamlit(stl_url)
 
-    st.divider()
+if menu == "Browse Catalog":
+    st.title("🚀 Luca's 3D Inventory")
+      st.divider()  # ERROR: This is indented 6 spaces instead of 4!
 
     # PRODUCTS LIST
     products = [
