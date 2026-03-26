@@ -36,7 +36,7 @@ if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     st.write("Ready-to-order designs. Select an item to see details.")
     
- products = [
+        products = [
         {
             "name": "BB-gun", 
             "price": 15, 
