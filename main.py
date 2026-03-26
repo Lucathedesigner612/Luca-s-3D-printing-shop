@@ -50,9 +50,8 @@ if menu == "Browse Catalog":
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
             
-            # LINE 65: This MUST be indented 12 spaces (3 tabs) from the left edge.
-            # If it lines up with 'for', it will fail! 
-            # It must line up with 'st.write' above it.
+            # LINE 63: This MUST be indented 12 spaces (3 tabs) from the left edge.
+            # It must line up perfectly with 'st.write' above it.
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
 
