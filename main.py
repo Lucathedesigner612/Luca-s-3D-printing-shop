@@ -12,9 +12,23 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR NAVIGATION ---
+# --- SIDEBAR NAVIGATION & STATUS ---
 st.sidebar.title("🖨️ Luca 3D Lab")
+
+# LIVE PRINTER STATUS
+# You can change this to "Busy" or "Maintenance" when you are printing!
+printer_status = "Available" 
+
+if printer_status == "Available":
+    st.sidebar.success("🟢 Status: Ready to Print")
+elif printer_status == "Busy":
+    st.sidebar.warning("🟡 Status: Printer is Busy")
+else:
+    st.sidebar.error("🔴 Status: Maintenance")
+
 st.sidebar.info("High-Quality 3D Prints in Malta 🇲🇹")
+st.sidebar.divider()
+
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pricing Calculator"])
 
 # --- 1. BROWSE CATALOG ---
@@ -24,7 +38,7 @@ if menu == "Browse Catalog":
     
     # Product Data
     products = [
-        {"name": "Articulated Dragon", "price": 15, "img": "https://images.unsplash.com/photo-1631002165109-7794e8dd87c0?w=500", "desc": "Stress-relief fidget toy. Moves perfectly."},
+        {"name": "BB-gun", "price": 10, "img": "https://makerworld.com/en/models/1213009-fn-bb90-bb-gun-interchangeable-magazine-scope#profileId-1228269"},
         {"name": "Low-Poly Planter", "price": 12, "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500", "desc": "Modern geometric pot for small plants."},
         {"name": "Tech Desk Stand", "price": 8, "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", "desc": "Universal phone or tablet holder."}
     ]
@@ -38,6 +52,15 @@ if menu == "Browse Catalog":
             st.caption(p["desc"])
             if st.button(f"Order {p['name']}", key=p['name']):
                 st.toast(f"Added {p['name']} to your request!")
+# Add this at the bottom of the "Browse Catalog" section
+st.divider()
+st.subheader("📊 Current Print Queue")
+queue_data = {
+    "Order ID": ["#001", "#002"],
+    "Item": ["Dragon", "Phone Stand"],
+    "Status": ["Printing...", "Waiting"]
+}
+st.table(queue_data)
 
 # --- 2. CUSTOM REQUEST ---
 elif menu == "Custom Request":
