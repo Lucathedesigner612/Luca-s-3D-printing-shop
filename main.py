@@ -47,7 +47,7 @@ products = [
         {
             "name": "Low-Poly Planter", 
             "price": 12, 
-            "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500", 
+            "img": "blob:https://web.whatsapp.com/7ce4acee-410e-4da9-b3bc-8ea930897108", 
             "desc": "Modern geometric design. Perfect for your desk at home."
         },
         {
