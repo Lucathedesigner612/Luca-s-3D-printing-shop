@@ -45,10 +45,10 @@ products = [
             "desc": "A cool gun with no pain but endless fun!!"
         },
         {
-            "name": "Low-Poly Planter", 
+            "name": "BB-gun ammo cartridge with ammo", 
             "price": 12, 
-            "img": "blob:https://web.whatsapp.com/7ce4acee-410e-4da9-b3bc-8ea930897108", 
-            "desc": "Modern geometric design. Perfect for your desk at home."
+            "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", 
+            "desc": "A box with alot of ammo for elite fun!!"
         },
         {
             "name": "Tech Desk Stand", 
