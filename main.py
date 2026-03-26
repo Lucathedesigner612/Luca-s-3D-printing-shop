@@ -36,19 +36,29 @@ if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     st.write("Ready-to-order designs. Select an item to see details.")
     
-    products = [
+ products = [
+        {
             "name": "BB-gun", 
+            "price": 15, 
+             
             "price": 10, 
             "img": "https://makerworld.bblmw.com/makerworld/model/USdcbb85be85cd53/design/2025-03-15_5ca8ff6c28f938.jpg?x-oss-process=image/resize,w_1000/format,webp", 
             "desc": "A cool gun with no pain but endless fun!!"
-        ,
+        },
         {
             "name": "BB-gun ammo cartridge with ammo", 
             "price": 12, 
             "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", 
             "desc": "A box with alot of ammo for elite fun!!"
-            
         },
+        {", 
+       
+        
+            "name": "Tech Desk Stand", 
+            "price": 8, 
+            "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", 
+            "desc": "Sturdy stand for your smartphone or small tablet."
+        }
     ]
     # Line 62: Make sure this is indented exactly 4 spaces (1 tab)
     col1, col2 = st.columns(2)
