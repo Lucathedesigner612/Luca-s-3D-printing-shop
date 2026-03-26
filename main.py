@@ -53,21 +53,17 @@ if menu == "Browse Catalog":
     ]
     
     # Aligned 4 spaces from the left
-    col1, col2 = st.columns(2)
-    
-    for i, p in enumerate(products):
-        # This logic splits items into two columns
+   for i, p in enumerate(products): # <--- 'p' is born here
         target_col = col1 if i % 2 == 0 else col2
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
-            st.caption(p.get("desc", "No description available."))
             
-            # Unique key for every button to prevent 'DuplicateElementKey' error
+            # THIS LINE BELOW is your line 72. 
+            # It MUST be indented exactly like this:
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
-
 # --- 2. CUSTOM REQUEST ---
 if st.button(f"Order {p['name']}", key=p['name']):
                 st.toast(f"Added {p['name']} to your request!")
