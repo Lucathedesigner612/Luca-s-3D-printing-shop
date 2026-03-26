@@ -54,8 +54,10 @@ if menu == "Browse Catalog":
                 st.success(f"Added {p['name']} to your request!")
 
 # --- 2. CUSTOM REQUEST ---
+
 elif menu == "Custom Request":
-# --- 2. CUSTOM REQUEST ---
+    st.title("📩 Custom Print Request") # This "fills" the block
+    st.write("Upload your STL files here.")
 if st.button(f"Order {p['name']}", key=p['name']):
                 st.toast(f"Added {p['name']} to your request!")
 # <-- Make sure there is no extra code here that isn't indented!
