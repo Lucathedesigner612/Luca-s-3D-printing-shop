@@ -63,8 +63,8 @@ products = [
 
     # We use 'i' as a counter to make every button unique
     for i, p in enumerate(products):
-        target_col = col1 if i % 2 == 0 else col2
-        with target_col:
+            target_col = col1 if i % 2 == 0 else col2
+            with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
