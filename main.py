@@ -31,39 +31,30 @@ st.sidebar.divider()
 
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pricing Calculator"])
 
+
 # --- 1. BROWSE CATALOG ---
 if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
-    st.write("High-quality 3D printed models and parts.")
     
-    # Updated Product List
     products = [
-        {
-            "name": "BB-gun", 
-            "price": 25, 
-            "img": "https://makerworld.bblmw.com/makerworld/model/USdcde5fa6689465/design/2024-04-23_dbb082b17bd468.jpeg?x-oss-process=image/resize,w_1000/format,webp", 
-            "desc": "Full-size 3D printed replica model. For display purposes."
-        },
-        {
-            "name": "6mm with cartridge", 
-            "price": 5, 
-            "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", 
-            "desc": "Precision 3D printed 6mm parts with integrated cartridge shell."
-        }
+        {"name": "BB-gun", "price": 25, "img": "https://makerworld.bblmw.com/makerworld/model/USdcde5fa6689465/design/2024-04-23_dbb082b17bd468.jpeg?x-oss-process=image/resize,w_1000/format,webp", "desc": "Display model."},
+        {"name": "6mm with cartridge", "price": 5, "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", "desc": "Precision parts."}
     ]
     
-    # Aligned 4 spaces from the left
-   for i, p in enumerate(products): # <--- 'p' is born here
+    col1, col2 = st.columns(2)
+    
+    for i, p in enumerate(products):
         target_col = col1 if i % 2 == 0 else col2
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
-            
-            # THIS LINE BELOW is your line 72. 
-            # It MUST be indented exactly like this:
+            # Using i ensures every button has a unique ID
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
+
+# --- 2. CUSTOM REQUEST ---
+elif menu == "Custom Request":
 # --- 2. CUSTOM REQUEST ---
 if st.button(f"Order {p['name']}", key=p['name']):
                 st.toast(f"Added {p['name']} to your request!")
