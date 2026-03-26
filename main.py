@@ -1,40 +1,73 @@
-elif choice == "3D Print Store":
-    st.title("🖨️ Luca's 3D Print Lab")
-    st.subheader("Custom Prints & Designs | Ships from Malta 🇲🇹")
+import streamlit as st
 
-    # Catalog Data (You can add more items here)
-    items = [
-        {"name": "Articulated Dragon", "price": "€15", "img": "https://images.unsplash.com/photo-1631002165109-7794e8dd87c0?w=400", "desc": "Fully moving joints, 20cm long."},
-        {"name": "Planter Pot", "price": "€10", "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400", "desc": "Geometric design for succulents."},
-        {"name": "Custom Keychain", "price": "€5", "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=400", "desc": "Personalized with your name."}
-    ]
+# --- PAGE CONFIG ---
+st.set_page_config(page_title="Luca 3D Lab | Malta", page_icon="🖨️", layout="wide")
 
-    # Displaying the Items in a Grid
-    col1, col2 = st.columns(2)
+# --- CUSTOM CSS FOR A MODERN LOOK ---
+st.markdown("""
+    <style>
+    .stApp { background-color: #0E1117; color: white; }
+    .stButton>button { width: 100%; border-radius: 10px; background-color: #00FFA3; color: black; font-weight: bold; }
+    .product-card { border: 1px solid #333; padding: 15px; border-radius: 15px; background: #161B22; }
+    </style>
+    """, unsafe_allow_html=True)
 
-    for i, item in enumerate(items):
-        target_col = col1 if i % 2 == 0 else col2
-        with target_col:
-            st.image(item["img"], use_container_width=True)
-            st.markdown(### {item['name']})
-            st.write(f"**Price:** {item['price']}")
-            st.caption(item["desc"])
-            
-            # THE "BUY" BUTTON
-            if st.button(f"Order {item['name']}", key=item['name']):
-                st.success(f"Great choice! Please fill out the form below to order the {item['name']}.")
-                
-    st.divider()
+# --- SIDEBAR NAVIGATION ---
+st.sidebar.title("🖨️ Luca 3D Lab")
+st.sidebar.info("High-Quality 3D Prints in Malta 🇲🇹")
+menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pricing Calculator"])
+
+# --- 1. BROWSE CATALOG ---
+if menu == "Browse Catalog":
+    st.title("🚀 Featured Prints")
+    st.write("Ready-to-order designs. Select an item to see details.")
     
-    # --- ORDER FORM ---
-    st.header("📩 Place an Order")
-    with st.form("order_form"):
-        cust_name = st.text_input("Your Name")
-        item_choice = st.selectbox("Select Item", [i["name"] for i in items])
-        color = st.select_slider("Select Filament Color", ["Red", "Blue", "Silver", "Black", "Gold"])
-        notes = st.text_area("Specific Requests (Size, etc.)")
+    # Product Data
+    products = [
+        {"name": "Articulated Dragon", "price": 15, "img": "https://images.unsplash.com/photo-1631002165109-7794e8dd87c0?w=500", "desc": "Stress-relief fidget toy. Moves perfectly."},
+        {"name": "Low-Poly Planter", "price": 12, "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500", "desc": "Modern geometric pot for small plants."},
+        {"name": "Tech Desk Stand", "price": 8, "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", "desc": "Universal phone or tablet holder."}
+    ]
+    
+    col1, col2 = st.columns(2)
+    for i, p in enumerate(products):
+        with (col1 if i % 2 == 0 else col2):
+            st.image(p["img"], use_container_width=True)
+            st.subheader(p["name"])
+            st.write(f"**Price:** €{p['price']}")
+            st.caption(p["desc"])
+            if st.button(f"Order {p['name']}", key=p['name']):
+                st.toast(f"Added {p['name']} to your request!")
+
+# --- 2. CUSTOM REQUEST ---
+elif menu == "Custom Request":
+    st.title("📩 Custom Print Request")
+    st.write("Have your own STL file? Upload it or describe it here.")
+    
+    with st.form("custom_form"):
+        name = st.text_input("Full Name")
+        email = st.text_input("Contact Email / WhatsApp")
+        color = st.selectbox("Filament Color", ["Matte Black", "Silk Gold", "Electric Blue", "Neon Green"])
+        details = st.text_area("Describe your project (size, usage, etc.)")
         
-        submitted = st.form_submit_code("Send Request")
+        submitted = st.form_submit_button("Submit Request")
         if submitted:
             st.balloons()
-            st.write(f"Thanks {cust_name}! I'll contact you about the **{color} {item_choice}**.")
+            st.success("Request Sent! I'll get back to you with a quote within 24 hours.")
+
+# --- 3. PRICING CALCULATOR ---
+elif menu == "Pricing Calculator":
+    st.title("📊 Instant Quote Tool")
+    st.write("Estimate the cost of your print based on weight and time.")
+    
+    weight = st.number_input("Object Weight (grams)", min_value=1, value=50)
+    hours = st.number_input("Estimated Print Time (hours)", min_value=1, value=3)
+    
+    # Simple Malta Market Logic: €0.05 per gram + €1.50 per hour
+    material_cost = weight * 0.05
+    machine_cost = hours * 1.50
+    total = material_cost + machine_cost
+    
+    st.divider()
+    st.metric("Estimated Total", f"€{total:.2f}")
+    st.info("Note: Final price may vary based on design complexity.")
