@@ -36,52 +36,35 @@ if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     st.write("Ready-to-order designs. Select an item to see details.")
     
-    # Product Data
-products = [
-        {
-            "name": "BB-gun", 
+    products = [
+"name": "BB-gun", 
             "price": 10, 
             "img": "https://makerworld.bblmw.com/makerworld/model/USdcbb85be85cd53/design/2025-03-15_5ca8ff6c28f938.jpg?x-oss-process=image/resize,w_1000/format,webp", 
             "desc": "A cool gun with no pain but endless fun!!"
-        },
+        ,
         {
             "name": "BB-gun ammo cartridge with ammo", 
             "price": 12, 
             "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", 
             "desc": "A box with alot of ammo for elite fun!!"
+            
         },
-        {
-            "name": "Tech Desk Stand", 
-            "price": 8, 
-            "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", 
-            "desc": "Sturdy stand for your smartphone or small tablet."
-        }
     ]
-    
-# Displaying the Items in a Grid
+    # Line 62: Make sure this is indented exactly 4 spaces (1 tab)
     col1, col2 = st.columns(2)
-
-    # We use 'i' as a counter to make every button unique
+    
     for i, p in enumerate(products):
-            target_col = col1 if i % 2 == 0 else col2
-            with target_col:
+        target_col = col1 if i % 2 == 0 else col2
+        with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
+            # Use .get to prevent the KeyError from before!
             st.caption(p.get("desc", "No description available."))
             
-            # This 'key=f"btn_{i}"' is the secret fix!
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
-# Add this at the bottom of the "Browse Catalog" section
-st.divider()
-st.subheader("📊 Current Print Queue")
-queue_data = {
-    "Order ID": ["#001", "#002"],
-    "Item": ["Dragon", "Phone Stand"],
-    "Status": ["Printing...", "Waiting"]
-}
-st.table(queue_data)
+
 
 # --- 2. CUSTOM REQUEST ---
 if st.button(f"Order {p['name']}", key=p['name']):
