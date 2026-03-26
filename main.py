@@ -1,48 +1,57 @@
 import streamlit as st
 import requests
+import stripe
 
 # --- CONFIG ---
-MY_EMAIL = "lucagalea612@gmail.com" # <--- Change this to your real email
+# ⚠️ REPLACE THESE WITH YOUR ACTUAL KEYS
+STRIPE_SECRET_KEY = "sk_test_51..." # Get this from Stripe Dashboard
+MY_EMAIL = "your-email@gmail.com" 
 
-def send_final_order(contact, cart_items):
-    url = f"https://formsubmit.co/ajax/{MY_EMAIL}"
-    items_text = "\n".join([f"- {item['name']} (€{item['price']})" for item in cart_items])
-    total = sum(item['price'] for item in cart_items)
-    payload = {
-        "_subject": f"New Order from {contact}",
-        "Customer": contact,
-        "Items": items_text,
-        "Total": f"€{total}"
-    }
-    return requests.post(url, json=payload)
+stripe.api_key = STRIPE_SECRET_KEY
 
-# 1. INITIALIZE MEMORY (This only runs once when the app starts)
+def create_checkout_session(items):
+    """Creates a Stripe Checkout session and returns the URL"""
+    line_items = []
+    for item in items:
+        line_items.append({
+            'price_data': {
+                'currency': 'eur',
+                'product_data': {'name': item['name']},
+                'unit_amount': int(item['price'] * 100), # Stripe uses cents
+            },
+            'quantity': 1,
+        })
+    
+    # This creates the link the user clicks to pay
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='payment',
+        success_url='https://luca-s-3d-printing-shop.streamlit.app/?payment=success',
+        cancel_url='https://luca-s-3d-printing-shop.streamlit.app/?payment=cancel',
+    )
+    return session.url
+
+# Initialize Cart
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
 st.set_page_config(page_title="Luca's 3D Shop", layout="wide")
 
-# --- SIDEBAR CART ---
-st.sidebar.title("🛒 Your Cart")
+# --- SIDEBAR ---
+st.sidebar.title("🛒 Cart")
+for i, item in enumerate(st.session_state.cart):
+    st.sidebar.write(f"{item['name']} - €{item['price']}")
 
-# 2. DISPLAY ITEMS FROM MEMORY
-if not st.session_state.cart:
-    st.sidebar.write("Your cart is empty.")
-else:
-    for i, item in enumerate(st.session_state.cart):
-        st.sidebar.write(f"{i+1}. {item['name']} - €{item['price']}")
-    
-    st.sidebar.markdown("---")
-    if st.sidebar.button("🗑️ Clear Cart"):
-        st.session_state.cart = []
-        st.rerun() # Refresh to show empty cart
+if st.sidebar.button("Clear Cart"):
+    st.session_state.cart = []
+    st.rerun()
 
 # --- MAIN NAVIGATION ---
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
 
 if menu == "Browse Catalog":
     st.title("🚀 Luca's 3D Inventory")
-    
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500"},
         {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"}
@@ -54,20 +63,30 @@ if menu == "Browse Catalog":
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"Price: €{p['price']}")
-            
-            # 3. ADD TO MEMORY AND REFRESH
-            if st.button(f"Add {p['name']} to Cart", key=f"add_{i}"):
+            if st.button(f"Add {p['name']}", key=f"add_{i}"):
                 st.session_state.cart.append(p)
-                st.toast(f"Added {p['name']} to cart!")
-                st.rerun() # THIS IS THE MAGIC LINE that fixes the display
+                st.rerun()
 
 elif menu == "Checkout":
-    st.title("💳 Finish Your Order")
-    if not st.session_state.cart:
-        st.warning("Your cart is empty! Go to the catalog to add items.")
-    else:
-        st.write("### Review Items:")
-        total_price = 0
-        for item in st.session_state.cart:
-            st.write(f"- {item['name']}: €{item['price']}")
-            total_price += item['price']
+    st.title("💳 Secure Checkout")
+    
+    # Check if they just came back from a successful payment
+    query_params = st.query_params
+    if query_params.get("payment") == "success":
+        st.balloons()
+        st.success("✅ Payment Successful! Luca is starting your print now.")
+        st.session_state.cart = [] # Clear cart
+    elif query_params.get("payment") == "cancel":
+        st.warning("❌ Payment cancelled. Your items are still in the cart.")
+
+    if st.session_state.cart:
+        total = sum(item['price'] for item in st.session_state.cart)
+        st.write(f"### Total Amount: €{total}")
+        
+        if st.button("Pay with Card (Stripe)"):
+            try:
+                checkout_url = create_checkout_session(st.session_state.cart)
+                st.info("Redirecting to secure payment page...")
+                st.markdown(f'<a href="{checkout_url}" target="_self" style="display: inline-block; padding: 10px 20px; background-color: #6772E5; color: white; text-decoration: none; border-radius: 5px;">Click Here to Pay €{total}</a>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Stripe Error: {e}")
