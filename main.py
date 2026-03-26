@@ -30,12 +30,10 @@ st.sidebar.info("High-Quality 3D Prints in Malta 🇲🇹")
 st.sidebar.divider()
 
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pricing Calculator"])
-
 # --- 1. BROWSE CATALOG ---
 if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     
-    # These are your items
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500", "desc": "Display model."},
         {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500", "desc": "Precision parts."}
@@ -43,18 +41,18 @@ if menu == "Browse Catalog":
     
     col1, col2 = st.columns(2)
     
-    # THE LOOP: This creates 'p'
+    # This loop starts the "room" where 'p' lives
     for i, p in enumerate(products):
         target_col = col1 if i % 2 == 0 else col2
         
-        # THE COLUMN: Everything inside here belongs to the column
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
             
-            # THE BUTTON: This MUST be indented 12 spaces from the left!
-            # Using key=f"btn_{i}" prevents the "Duplicate Key" error.
+            # LINE 65: This MUST be indented 12 spaces (3 tabs) from the left edge.
+            # If it lines up with 'for', it will fail! 
+            # It must line up with 'st.write' above it.
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
 
