@@ -41,7 +41,7 @@ products = [
         {
             "name": "BB-gun", 
             "price": 10, 
-            "img": "https://makerworld.com/en/models/1213009-fn-bb90-bb-gun-interchangeable-magazine-scope#profileId-1228269", 
+            "img": "https://makerworld.bblmw.com/makerworld/model/USdcbb85be85cd53/design/2025-03-15_5ca8ff6c28f938.jpg?x-oss-process=image/resize,w_1000/format,webp", 
             "desc": "A cool gun with no pain but endless fun!!"
         },
         {
