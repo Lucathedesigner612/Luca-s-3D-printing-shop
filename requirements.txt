@@ -1,4 +1,4 @@
 streamlit
 requests
 stripe
-streamlit-stl
+stl-to-streamlit
