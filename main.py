@@ -37,10 +37,25 @@ if menu == "Browse Catalog":
     st.write("Ready-to-order designs. Select an item to see details.")
     
     # Product Data
-    products = [
-        {"name": "BB-gun", "price": 10, "img": "https://makerworld.com/en/models/1213009-fn-bb90-bb-gun-interchangeable-magazine-scope#profileId-1228269"},
-        {"name": "Low-Poly Planter", "price": 12, "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500", "desc": "Modern geometric pot for small plants."},
-        {"name": "Tech Desk Stand", "price": 8, "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", "desc": "Universal phone or tablet holder."}
+products = [
+        {
+            "name": "BB-gun", 
+            "price": 10, 
+            "img": "https://makerworld.com/en/models/1213009-fn-bb90-bb-gun-interchangeable-magazine-scope#profileId-1228269", 
+            "desc": "A cool gun with no pain but endless fun!!"
+        },
+        {
+            "name": "Low-Poly Planter", 
+            "price": 12, 
+            "img": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500", 
+            "desc": "Modern geometric design. Perfect for your desk at home."
+        },
+        {
+            "name": "Tech Desk Stand", 
+            "price": 8, 
+            "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", 
+            "desc": "Sturdy stand for your smartphone or small tablet."
+        }
     ]
     
     col1, col2 = st.columns(2)
