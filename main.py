@@ -31,7 +31,6 @@ st.sidebar.divider()
 
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pricing Calculator"])
 
-
 # --- 1. BROWSE CATALOG ---
 if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
@@ -43,15 +42,18 @@ if menu == "Browse Catalog":
     
     col1, col2 = st.columns(2)
     
+    # LEVEL 1: The Loop starts here
     for i, p in enumerate(products):
         target_col = col1 if i % 2 == 0 else col2
+        
+        # LEVEL 2: The Column starts here
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
             
-            # LINE 62: This MUST be indented 12 spaces (3 tabs) from the left
-            # Using key=f"btn_{i}" prevents the "Duplicate Key" error
+            # LEVEL 3: The Button (LINE 62). 
+            # It MUST be indented further than 'with target_col'
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
 
