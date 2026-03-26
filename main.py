@@ -34,47 +34,39 @@ menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pric
 # --- 1. BROWSE CATALOG ---
 if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
-    st.write("Ready-to-order designs. Select an item to see details.")
+    st.write("High-quality 3D printed models and parts.")
     
-        products = [
+    # Updated Product List
+    products = [
         {
             "name": "BB-gun", 
-            "price": 15, 
-             
-            "price": 10, 
-            "img": "https://makerworld.bblmw.com/makerworld/model/USdcbb85be85cd53/design/2025-03-15_5ca8ff6c28f938.jpg?x-oss-process=image/resize,w_1000/format,webp", 
-            "desc": "A cool gun with no pain but endless fun!!"
+            "price": 25, 
+            "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500", 
+            "desc": "Full-size 3D printed replica model. For display purposes."
         },
         {
-            "name": "BB-gun ammo cartridge with ammo", 
-            "price": 12, 
-            "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", 
-            "desc": "A box with alot of ammo for elite fun!!"
-        },
-        {", 
-       
-        
-            "name": "Tech Desk Stand", 
-            "price": 8, 
-            "img": "https://images.unsplash.com/photo-1618090584126-129cd1f3fbae?w=500", 
-            "desc": "Sturdy stand for your smartphone or small tablet."
+            "name": "6mm with cartridge", 
+            "price": 5, 
+            "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500", 
+            "desc": "Precision 3D printed 6mm parts with integrated cartridge shell."
         }
     ]
-    # Line 62: Make sure this is indented exactly 4 spaces (1 tab)
+    
+    # Aligned 4 spaces from the left
     col1, col2 = st.columns(2)
     
     for i, p in enumerate(products):
+        # This logic splits items into two columns
         target_col = col1 if i % 2 == 0 else col2
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
-            # Use .get to prevent the KeyError from before!
             st.caption(p.get("desc", "No description available."))
             
+            # Unique key for every button to prevent 'DuplicateElementKey' error
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
-
 
 # --- 2. CUSTOM REQUEST ---
 if st.button(f"Order {p['name']}", key=p['name']):
