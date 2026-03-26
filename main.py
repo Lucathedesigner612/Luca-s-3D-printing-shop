@@ -47,7 +47,7 @@ if menu == "Browse Catalog":
         {
             "name": "6mm with cartridge", 
             "price": 5, 
-            "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500", 
+            "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", 
             "desc": "Precision 3D printed 6mm parts with integrated cartridge shell."
         }
     ]
