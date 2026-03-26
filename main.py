@@ -37,27 +37,29 @@ if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     
     products = [
-        {"name": "BB-gun", "price": 25, "img": "https://makerworld.bblmw.com/makerworld/model/USdcde5fa6689465/design/2024-04-23_dbb082b17bd468.jpeg?x-oss-process=image/resize,w_1000/format,webp", "desc": "Display model."},
-        {"name": "6mm with cartridge", "price": 5, "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp", "desc": "Precision parts."}
+        {"name": "BB-gun", "price": 25, "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg?x-oss-process=image/resize,w_1000/format,webp"},
+        {"name": "6mm with cartridge", "price": 5, "img": "https://makerworld.bblmw.com/makerworld/model/USdcde5fa6689465/design/2024-04-23_dbb082b17bd468.jpeg?x-oss-process=image/resize,w_1000/format,webp", "desc": "Precision parts."}
     ]
     
     col1, col2 = st.columns(2)
     
+    # This loop is what creates 'p'
     for i, p in enumerate(products):
         target_col = col1 if i % 2 == 0 else col2
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
-            # Using i ensures every button has a unique ID
+            
+            # Line 61: This MUST be indented 12 spaces (3 tabs) from the left
+            # to stay inside the 'with' and 'for' blocks!
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
 
 # --- 2. CUSTOM REQUEST ---
-
 elif menu == "Custom Request":
-    st.title("📩 Custom Print Request") # This "fills" the block
-    st.write("Upload your STL files here.")
+    st.title("📩 Custom Print Request")
+    st.write("Fill out the form below for a quote."))
 if st.button(f"Order {p['name']}", key=p['name']):
                 st.toast(f"Added {p['name']} to your request!")
 # <-- Make sure there is no extra code here that isn't indented!
