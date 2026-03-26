@@ -62,4 +62,5 @@ elif menu == "Checkout & Custom":
         st.warning("Your cart is empty! Add something from the catalog first.")
     else:
         st.write("### Items in your order:")
-        for item in st.session_state.cart:
+    for item in st.session_state.cart:
+        st.sidebar.write(f"✅ {item['name']} - €{item['price']}") # FIXED: Pushed right
