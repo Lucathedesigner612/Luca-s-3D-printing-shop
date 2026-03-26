@@ -50,7 +50,7 @@ if menu == "Browse Catalog":
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
             
-            # LINE 63: This MUST be indented 12 spaces (3 tabs) from the left
+            # LINE 62: This MUST be indented 12 spaces (3 tabs) from the left
             # Using key=f"btn_{i}" prevents the "Duplicate Key" error
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
