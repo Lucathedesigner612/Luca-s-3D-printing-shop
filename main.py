@@ -63,7 +63,7 @@ queue_data = {
 st.table(queue_data)
 
 # --- 2. CUSTOM REQUEST ---
- elif menu == "Custom Request":
+elif menu == "Custom Request":
     st.title("📩 Custom Print Request")
     st.write("Have your own STL file? Upload it or describe it here.")
     
