@@ -58,15 +58,21 @@ products = [
         }
     ]
     
-col1, col2 = st.columns(2)
-for i, p in enumerate(products):
-        with (col1 if i % 2 == 0 else col2):
+# Displaying the Items in a Grid
+    col1, col2 = st.columns(2)
+
+    # We use 'i' as a counter to make every button unique
+    for i, p in enumerate(products):
+        target_col = col1 if i % 2 == 0 else col2
+        with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
-            st.caption(p["desc"])
-            if st.button(f"Order {p['name']}", key=p['name']):
-                st.toast(f"Added {p['name']} to your request!")
+            st.caption(p.get("desc", "No description available."))
+            
+            # This 'key=f"btn_{i}"' is the secret fix!
+            if st.button(f"Order {p['name']}", key=f"btn_{i}"):
+                st.success(f"Added {p['name']} to your request!")
 # Add this at the bottom of the "Browse Catalog" section
 st.divider()
 st.subheader("📊 Current Print Queue")
