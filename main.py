@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import stripe
-from streamlit_stl import stl_viewer
+from stl_to_streamlit import stl_to_streamlit # <--- Updated this line
 
 # --- 1. CONFIG & SECRETS ---
 # Accessing the secret key safely from Streamlit Cloud Secrets
@@ -63,11 +63,11 @@ if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     
     # 3D STL VIEWER SECTION
-    with st.expander("🔍 View 3D Model (Interactive)", expanded=True):
-        st.write("Rotate and zoom to inspect our high-detail Deer model.")
-        # Replace this URL with your own STL file link from GitHub Raw
+with st.expander("🔍 View 3D Model (Interactive)", expanded=True):
+        st.write("Rotate and zoom to inspect our high-detail model.")
         stl_url = "https://raw.githubusercontent.com/thevahidal/streamlit-stl/main/examples/models/deer.stl"
-        stl_viewer(stl_url, color="#FF4B4B")
+        # The new library uses this command:
+        stl_to_streamlit(stl_url)
 
     st.divider()
 
