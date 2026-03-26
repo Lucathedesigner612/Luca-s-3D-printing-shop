@@ -69,27 +69,47 @@ if menu == "Browse Catalog":
             if st.button(f"Add {p['name']}", key=f"add_{i}"):
                 st.session_state.cart.append(p)
                 st.rerun()
-
 elif menu == "Checkout":
     st.title("💳 Secure Checkout")
     
-    # Check if they just came back from a successful payment
-    query_params = st.query_params
-    if query_params.get("payment") == "success":
+    # 1. Check for success first
+    if st.query_params.get("payment") == "success":
         st.balloons()
         st.success("✅ Payment Successful! Luca is starting your print now.")
-        st.session_state.cart = [] # Clear cart
-    elif query_params.get("payment") == "cancel":
-        st.warning("❌ Payment cancelled. Your items are still in the cart.")
+        st.session_state.cart = [] 
+        st.stop() # Stops the rest of the page from loading to prevent loops
 
-    if st.session_state.cart:
+    if not st.session_state.cart:
+        st.info("Your cart is empty.")
+    else:
         total = sum(item['price'] for item in st.session_state.cart)
         st.write(f"### Total Amount: €{total}")
         
-        if st.button("Pay with Card (Stripe)"):
+        # 2. Use a Form or a simple button to generate the Link
+        if st.button("Generate Secure Payment Link"):
             try:
-                checkout_url = create_checkout_session(st.session_state.cart)
-                st.info("Redirecting to secure payment page...")
-                st.markdown(f'<a href="{checkout_url}" target="_self" style="display: inline-block; padding: 10px 20px; background-color: #6772E5; color: white; text-decoration: none; border-radius: 5px;">Click Here to Pay €{total}</a>', unsafe_allow_html=True)
+                with st.spinner("Preparing secure checkout..."):
+                    checkout_url = create_checkout_session(st.session_state.cart)
+                
+                # 3. Instead of a redirect (which freezes), show a clear Action Button
+                st.markdown(f"""
+                    <a href="{checkout_url}" target="_blank">
+                        <button style="
+                            background-color: #6772E5;
+                            color: white;
+                            padding: 15px 32px;
+                            text-align: center;
+                            font-size: 16px;
+                            margin: 4px 2px;
+                            cursor: pointer;
+                            border: none;
+                            border-radius: 8px;
+                            width: 100%;
+                            ">
+                            Click Here to Pay €{total} via Stripe
+                        </button>
+                    </a>
+                """, unsafe_allow_html=True)
+                st.caption("This will open a secure Stripe tab.")
             except Exception as e:
                 st.error(f"Stripe Error: {e}")
