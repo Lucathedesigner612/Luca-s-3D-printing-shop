@@ -58,7 +58,7 @@ products = [
         }
     ]
     
-    col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
     for i, p in enumerate(products):
         with (col1 if i % 2 == 0 else col2):
             st.image(p["img"], use_container_width=True)
