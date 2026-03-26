@@ -1,66 +1,46 @@
 import streamlit as st
 import requests
 
-# --- CONFIG ---
-# CHANGE THIS TO YOUR EMAIL!
-MY_EMAIL = "lucagalea612@gmail.com"
+# ⚠️ CHANGE THIS to your actual email!
+MY_EMAIL = "your-email@gmail.com"
 
 def send_email(subject, message):
-    """Sends an email notification via FormSubmit"""
+    # This sends the data to FormSubmit
     url = f"https://formsubmit.co/ajax/{MY_EMAIL}"
-    payload = {
-        "_subject": subject,
-        "message": message
-    }
-    try:
-        requests.post(url, json=payload)
-    except:
-        pass # Fails silently if internet is blipping
+    payload = {"_subject": subject, "message": message}
+    response = requests.post(url, json=payload)
+    return response.status_code == 200
 
-# --- UI ---
-st.set_page_config(page_title="Luca's 3D Printing", layout="wide")
+st.set_page_config(page_title="Luca's 3D Shop")
 
-st.sidebar.title("🛠️ Luca's 3D Shop")
-menu = st.sidebar.radio("Go to:", ["Browse Catalog", "Custom Request"])
+st.sidebar.title("🛠️ Luca's 3D Lab")
+menu = st.sidebar.radio("Menu", ["Browse Catalog", "Custom Request"])
 
-# --- 1. BROWSE CATALOG ---
 if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
-    
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500"},
         {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"}
     ]
     
     col1, col2 = st.columns(2)
-    
     for i, p in enumerate(products):
-        target_col = col1 if i % 2 == 0 else col2
-        with target_col:
+        with (col1 if i % 2 == 0 else col2):
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
-            st.write(f"**Price:** €{p['price']}")
-            
+            st.write(f"Price: €{p['price']}")
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
-                # SEND EMAIL NOTIFICATION
-                msg = f"New Order: {p['name']} for €{p['price']}"
-                send_email("New Shop Order!", msg)
-                st.success(f"Order for {p['name']} sent to Luca!")
+                if send_email(f"ORDER: {p['name']}", f"Someone wants to buy the {p['name']} for €{p['price']}"):
+                    st.success("Order sent! Check your email for confirmation.")
+                else:
+                    st.error("Email failed to send. Check your MY_EMAIL setting.")
 
-# --- 2. CUSTOM REQUEST ---
 elif menu == "Custom Request":
-    st.title("📩 Custom Print Request")
-    
+    st.title("📩 Custom Request")
     with st.form("custom_form"):
-        contact = st.text_input("Your Email or Phone Number")
-        details = st.text_area("What do you want to print? (Size, Color, etc.)")
-        submitted = st.form_submit_button("Submit Request")
-        
-        if submitted:
+        contact = st.text_input("Email/Phone")
+        details = st.text_area("Details")
+        if st.form_submit_button("Send Request"):
             if contact and details:
-                # SEND EMAIL NOTIFICATION
-                msg = f"Contact: {contact}\nDetails: {details}"
-                send_email("New Custom Request!", msg)
-                st.success("Request sent! Luca will contact you soon.")
-            else:
-                st.error("Please fill in both fields.")
+                send_email("New Custom Request", f"From: {contact}\nDetails: {details}")
+                st.success("Sent! Luca will contact you.")
