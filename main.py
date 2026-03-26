@@ -41,7 +41,7 @@ if menu == "Browse Catalog":
         {
             "name": "BB-gun", 
             "price": 25, 
-            "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500", 
+            "img": "https://makerworld.com/en/models/423977-glock-19-no-glue#profileId-327268", 
             "desc": "Full-size 3D printed replica model. For display purposes."
         },
         {
