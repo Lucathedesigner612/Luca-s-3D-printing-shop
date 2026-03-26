@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # ⚠️ CHANGE THIS to your actual email!
-MY_EMAIL = "your-email@gmail.com"
+MY_EMAIL = "lucagalea612@gmail.com"
 
 def send_email(subject, message):
     # This sends the data to FormSubmit
