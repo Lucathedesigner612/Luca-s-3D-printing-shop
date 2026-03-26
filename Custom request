@@ -1,0 +1,5 @@
+# Add this inside your "Custom Request" section
+st.divider()
+st.subheader("💬 Quick Contact")
+whatsapp_link = "https://wa.me/79601211" # Replace with your actual number!
+st.markdown(f'<a href="{whatsapp_link}" target="_blank"><button style="background-color: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Message me on WhatsApp</button></a>', unsafe_allow_html=True)
