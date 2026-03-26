@@ -1,16 +1,26 @@
 import streamlit as st
 import requests
 import stripe
-from stl_to_streamlit import stl_to_streamlit # <--- Updated this line
+# Try to import the viewer, but don't crash the whole site if it fails
+try:
+    from stl_to_streamlit import stl_to_streamlit
+except ImportError:
+    stl_to_streamlit = None
 
-# --- 1. CONFIG & SECRETS ---
-# Accessing the secret key safely from Streamlit Cloud Secrets
+# --- CONFIG ---
 try:
     stripe.api_key = st.secrets["STRIPE_SECRET_KEY"]
 except:
-    st.error("Missing Stripe Key! Please add STRIPE_SECRET_KEY to your App Secrets.")
+    st.warning("Stripe Key not found in Secrets.")
 
-MY_EMAIL = "your-email@gmail.com" # <--- Change to your real email
+# ... inside your Browse Catalog menu ...
+if menu == "Browse Catalog":
+    if stl_to_streamlit:
+        with st.expander("🔍 View 3D Model"):
+            stl_url = "https://raw.githubusercontent.com/thevahidal/streamlit-stl/main/examples/models/deer.stl"
+            stl_to_streamlit(stl_url)
+    else:
+        st.error("3D Viewer library is still installing. Please wait a moment.")
 
 def create_checkout_session(items):
     """Creates a Stripe Checkout session and returns the URL"""
