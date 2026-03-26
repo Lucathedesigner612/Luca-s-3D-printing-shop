@@ -1,17 +1,17 @@
 import streamlit as st
 import requests
 import stripe
+from streamlit_stl import stl_viewer
 
-# --- CONFIG ---
-# This line tells the app to pull the key from the "Secrets" menu you just filled out
+# --- 1. CONFIG & SECRETS ---
+# Accessing the secret key safely from Streamlit Cloud Secrets
 try:
     stripe.api_key = st.secrets["STRIPE_SECRET_KEY"]
 except:
     st.error("Missing Stripe Key! Please add STRIPE_SECRET_KEY to your App Secrets.")
 
-MY_EMAIL = "lucagalea612@gmail.com" 
+MY_EMAIL = "your-email@gmail.com" # <--- Change to your real email
 
-# ... rest of your code ...
 def create_checkout_session(items):
     """Creates a Stripe Checkout session and returns the URL"""
     line_items = []
@@ -19,13 +19,12 @@ def create_checkout_session(items):
         line_items.append({
             'price_data': {
                 'currency': 'eur',
-                'product_data': {'name': item['name']},
-                'unit_amount': int(item['price'] * 100), # Stripe uses cents
+                'product_data': {'name': item['display_name']},
+                'unit_amount': int(item['price'] * 100), # Cents
             },
             'quantity': 1,
         })
     
-    # This creates the link the user clicks to pay
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=line_items,
@@ -35,47 +34,49 @@ def create_checkout_session(items):
     )
     return session.url
 
-# Initialize Cart
+# --- 2. SESSION STATE (MEMORY) ---
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-st.set_page_config(page_title="Luca's 3D Shop", layout="wide")
+st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
-# --- SIDEBAR ---
-st.sidebar.title("🛒 Cart")
-for i, item in enumerate(st.session_state.cart):
-    st.sidebar.write(f"{item['name']} - €{item['price']}")
-
-if st.sidebar.button("Clear Cart"):
-    st.session_state.cart = []
-    st.rerun()
-
-# --- MAIN NAVIGATION ---
+# --- 3. SIDEBAR NAVIGATION & CART ---
+st.sidebar.title("🛠️ Luca's 3D Lab")
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
 
-from streamlit_stl import stl_viewer # Make sure this is in requirements.txt
+st.sidebar.divider()
+st.sidebar.subheader("🛒 Your Cart")
 
+if not st.session_state.cart:
+    st.sidebar.write("Your cart is empty.")
+else:
+    for i, item in enumerate(st.session_state.cart):
+        st.sidebar.write(f"**{item['display_name']}**")
+        st.sidebar.caption(f"€{item['price']}")
+    
+    if st.sidebar.button("🗑️ Clear Cart"):
+        st.session_state.cart = []
+        st.rerun()
+
+# --- 4. BROWSE CATALOG ---
 if menu == "Browse Catalog":
-    st.title("🚀 Luca's 3D Inventory")
+    st.title("🚀 Featured Prints")
     
-    # 1. THE 3D PREVIEWER (Feature your best model)
-    st.subheader("🔍 3D Model Inspector")
-    st.info("Rotate and zoom to see the print quality before you buy!")
-    
-    # You can replace this URL with a link to your own .stl file on GitHub
-    test_stl_url = "https://raw.githubusercontent.com/thevahidal/streamlit-stl/main/examples/models/deer.stl"
-    
-    stl_viewer(test_stl_url, color="#FF4B4B")
-    
+    # 3D STL VIEWER SECTION
+    with st.expander("🔍 View 3D Model (Interactive)", expanded=True):
+        st.write("Rotate and zoom to inspect our high-detail Deer model.")
+        # Replace this URL with your own STL file link from GitHub Raw
+        stl_url = "https://raw.githubusercontent.com/thevahidal/streamlit-stl/main/examples/models/deer.stl"
+        stl_viewer(stl_url, color="#FF4B4B")
+
     st.divider()
 
-    # 2. THE CATALOG WITH COLOR SELECTION
+    # PRODUCTS LIST
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500"},
         {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500"}
     ]
     
-    # Available Filaments
     colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "✨ Silk Gold", "🔵 Galaxy Blue"]
 
     col1, col2 = st.columns(2)
@@ -84,42 +85,49 @@ if menu == "Browse Catalog":
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             
-            # 3. COLOR DROPDOWN
-            chosen_color = st.selectbox(f"Select Filament for {p['name']}", colors, key=f"color_{i}")
+            # COLOR SELECTOR
+            selected_color = st.selectbox(f"Filament Color ({p['name']})", colors, key=f"col_{i}")
+            st.write(f"**Price: €{p['price']}**")
             
-            st.write(f"**Price:** €{p['price']}")
-            
-            if st.button(f"Add {p['name']} to Cart", key=f"add_{i}"):
-                # We save the chosen color into the cart item
-                item_to_add = p.copy()
-                item_to_add['name'] = f"{p['name']} ({chosen_color})"
-                
-                st.session_state.cart.append(item_to_add)
-                st.toast(f"Added {item_to_add['name']}!")
+            if st.button(f"Add to Cart", key=f"add_{i}"):
+                # Add customized item to session state
+                new_item = p.copy()
+                new_item['display_name'] = f"{p['name']} - {selected_color}"
+                st.session_state.cart.append(new_item)
+                st.toast(f"Added {new_item['display_name']}!")
                 st.rerun()
+
+# --- 5. CHECKOUT PAGE ---
 elif menu == "Checkout":
     st.title("💳 Secure Checkout")
     
-    # 1. Check for success first
-    if st.query_params.get("payment") == "success":
+    # Handle Stripe Redirects
+    query_params = st.query_params
+    if query_params.get("payment") == "success":
         st.balloons()
-        st.success("✅ Payment Successful! Luca is starting your print now.")
-        st.session_state.cart = [] 
-        st.stop() # Stops the rest of the page from loading to prevent loops
+        st.success("✅ Payment received! Luca is heating up the printer now.")
+        st.session_state.cart = []
+        st.stop()
+    elif query_params.get("payment") == "cancel":
+        st.warning("❌ Payment was cancelled.")
 
     if not st.session_state.cart:
-        st.info("Your cart is empty.")
+        st.info("Nothing in your cart yet! Head back to the catalog.")
     else:
-        total = sum(item['price'] for item in st.session_state.cart)
+        st.write("### Review Your Order:")
+        total = 0
+        for item in st.session_state.cart:
+            st.write(f"- {item['display_name']}: €{item['price']}")
+            total += item['price']
+        
+        st.divider()
         st.write(f"### Total Amount: €{total}")
         
-        # 2. Use a Form or a simple button to generate the Link
-        if st.button("Generate Secure Payment Link"):
+        if st.button("Generate Payment Link"):
             try:
-                with st.spinner("Preparing secure checkout..."):
+                with st.spinner("Talking to Stripe..."):
                     checkout_url = create_checkout_session(st.session_state.cart)
                 
-                # 3. Instead of a redirect (which freezes), show a clear Action Button
                 st.markdown(f"""
                     <a href="{checkout_url}" target="_blank">
                         <button style="
@@ -128,16 +136,16 @@ elif menu == "Checkout":
                             padding: 15px 32px;
                             text-align: center;
                             font-size: 16px;
-                            margin: 4px 2px;
+                            margin: 10px 0px;
                             cursor: pointer;
                             border: none;
                             border-radius: 8px;
                             width: 100%;
                             ">
-                            Click Here to Pay €{total} via Stripe
+                            Pay €{total} Now
                         </button>
                     </a>
                 """, unsafe_allow_html=True)
-                st.caption("This will open a secure Stripe tab.")
+                st.caption("Secure payment processed by Stripe.")
             except Exception as e:
-                st.error(f"Stripe Error: {e}")
+                st.error(f"Error creating checkout: {e}")
