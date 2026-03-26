@@ -59,7 +59,7 @@ if menu == "Browse Catalog":
 # --- 2. CUSTOM REQUEST ---
 elif menu == "Custom Request":
     st.title("📩 Custom Print Request")
-    st.write("Fill out the form below for a quote."))
+    st.write("Fill out the form below for a quote.")
 if st.button(f"Order {p['name']}", key=p['name']):
                 st.toast(f"Added {p['name']} to your request!")
 # <-- Make sure there is no extra code here that isn't indented!
