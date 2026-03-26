@@ -35,6 +35,7 @@ menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Custom Request", "Pric
 if menu == "Browse Catalog":
     st.title("🚀 Featured Prints")
     
+    # These are your items
     products = [
         {"name": "BB-gun", "price": 25, "img": "https://images.unsplash.com/photo-1595590424283-b8f17842773f?w=500", "desc": "Display model."},
         {"name": "6mm with cartridge", "price": 5, "img": "https://images.unsplash.com/photo-1584346133934-a3afd2a33c4c?w=500", "desc": "Precision parts."}
@@ -42,18 +43,18 @@ if menu == "Browse Catalog":
     
     col1, col2 = st.columns(2)
     
-    # LEVEL 1: The Loop starts here
+    # THE LOOP: This creates 'p'
     for i, p in enumerate(products):
         target_col = col1 if i % 2 == 0 else col2
         
-        # LEVEL 2: The Column starts here
+        # THE COLUMN: Everything inside here belongs to the column
         with target_col:
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
             st.write(f"**Price:** €{p['price']}")
             
-            # LEVEL 3: The Button (LINE 62). 
-            # It MUST be indented further than 'with target_col'
+            # THE BUTTON: This MUST be indented 12 spaces from the left!
+            # Using key=f"btn_{i}" prevents the "Duplicate Key" error.
             if st.button(f"Order {p['name']}", key=f"btn_{i}"):
                 st.success(f"Added {p['name']} to your request!")
 
