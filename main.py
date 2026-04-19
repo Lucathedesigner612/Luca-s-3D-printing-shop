@@ -52,7 +52,7 @@ if menu == "Browse Catalog":
         {"name": "BB-ammo", "price": 0.50,"img": "https://makerworld.bblmw.com/makerworld/model/US14a586903f14f8/design/2025-05-15_b41c34cbd23cb.jpg?x-oss-process=image/resize,w_1000/format,webp"}
     ]
     
-    colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "✨ Silk Gold", "🔵 Galaxy Blue"]
+    colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk Gold", "🟢 Apple Green"]
 
     col1, col2 = st.columns(2)
     for i, p in enumerate(products):
