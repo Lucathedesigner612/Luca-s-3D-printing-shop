@@ -144,3 +144,7 @@ elif menu == "Checkout":
                     """, unsafe_allow_html=True)
                 except Exception as e:
                     st.error(f"Stripe Error: {e}")
+
+
+if st.button(f"Buy {item['name']} for ${item['price']}"):
+    st.write(f"Click here to pay: [Revolut Payment Link](https://revolut.me/lucaf2nfx/{item['price']})")
