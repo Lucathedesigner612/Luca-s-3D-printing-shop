@@ -1,58 +1,63 @@
 import streamlit as st
 import requests
 
-# --- CONFIG ---
-# Get your API Key from Revolut Business: Settings -> APIs -> Merchant API
-REVOLUT_API_KEY = "your_rev_prod_secret_key" 
+# --- 1. PRODUCT DATABASE ---
+# Add or remove your 3D models here
+products = [
+    {"name": "BB-gun", "price": 25, "img": "https://makerworld.bblmw.com/makerworld/model/US18955f0fc513e5/design/2024-01-03_201b2ae71df09.jpg?x-oss-process=image/resize,w_1000/format,webp"},
+    {"name": "6mm Cartridge", "price": 5, "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg"},
+    {"name": "Gatling gun", "price": 30, "img": "https://makerworld.bblmw.com/makerworld/model/US92c5fd98860546/design/2025-01-20_b0744fb62f5f2.gif?x-oss-process=image/resize,w_1000/format,webp"},
+    {"name": "BB-ammo", "price": 0.50, "img": "https://makerworld.bblmw.com/makerworld/model/US14a586903f14f8/design/2025-05-15_b41c34cbd23cb.jpg?x-oss-process=image/resize,w_1000/format,webp"}
+]
 
+colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk Gold", "🟢 Apple Green"]
+
+# --- 2. CONFIG & SECRETS ---
+# Replace with your real Revolut Merchant Secret Key
+# Better: Add REVOLUT_SECRET_KEY to your Streamlit Secrets
+if "REVOLUT_SECRET_KEY" in st.secrets:
+    REV_KEY = st.secrets["REVOLUT_SECRET_KEY"]
+else:
+    REV_KEY = "your_sk_here" 
+
+# --- 3. SESSION STATE ---
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-st.set_page_config(page_title="Luca's 3D Lab", layout="wide")
+st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
-# --- CATALOG LOGIC (Same as before) ---
-st.sidebar.title("🛒 Your Cart")
-total_cart = sum(item['price'] for item in st.session_state.cart)
-for item in st.session_state.cart:
-    st.sidebar.write(f"{item['display_name']} - €{item['price']}")
+# --- 4. SIDEBAR (Cart Summary) ---
+st.sidebar.title("🛠️ Luca's 3D Lab")
+menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
 
-# --- REVOLUT ORDER CREATION ---
-def create_revolut_order(amount):
-    url = "https://merchant.revolut.com/api/1.0/orders"
-    headers = {
-        "Authorization": f"Bearer {REVOLUT_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "amount": int(amount * 100), # Revolut expects cents/pence
-        "currency": "EUR",
-        "description": "3D Printing Order from Luca's Lab"
-    }
-    response = requests.post(url, json=data, headers=headers)
-    return response.json()
-
-# --- CHECKOUT PAGE ---
-st.title("💳 Checkout")
+st.sidebar.divider()
+st.sidebar.subheader("🛒 Your Cart")
 
 if not st.session_state.cart:
-    st.info("Cart is empty.")
+    st.sidebar.write("Empty")
 else:
-    st.write(f"### Total to Pay: €{total_cart}")
+    total_cart = sum(item['price'] for item in st.session_state.cart)
+    for i, item in enumerate(st.session_state.cart):
+        st.sidebar.write(f"**{item['display_name']}** (€{item['price']})")
     
-    if st.button("Proceed to Apple Pay / Card", type="primary"):
-        if REVOLUT_API_KEY == "your_rev_prod_secret_key":
-            st.error("You need to add your real Revolut Merchant API key!")
-        else:
-            order_data = create_revolut_order(total_cart)
-            
-            if "public_id" in order_data:
-                # This opens the official Revolut checkout page which handles Apple Pay
-                checkout_url = f"https://checkout.revolut.com/payment?public_id={order_data['public_id']}"
-                st.link_button("🚀 Open Secure Payment", checkout_url)
-                st.info("Apple Pay will be available on the payment page.")
-            else:
-                st.error("Could not create order. Check your API Key.")
-
-    if st.button("Clear Cart"):
+    st.sidebar.write(f"### Total: €{total_cart}")
+    if st.sidebar.button("🗑️ Clear"):
         st.session_state.cart = []
         st.rerun()
+
+# --- 5. PAGE: BROWSE CATALOG ---
+if menu == "Browse Catalog":
+    st.title("🚀 Custom 3D Prints")
+    st.write("Pick your model and color, then head to Checkout.")
+
+    col1, col2 = st.columns(2)
+    for i, p in enumerate(products):
+        with (col1 if i % 2 == 0 else col2):
+            st.image(p["img"], use_container_width=True)
+            st.subheader(p["name"])
+            
+            # Options
+            sel_color = st.selectbox(f"Color for {p['name']}", colors, key=f"c_{i}")
+            st.write(f"**Price: €{p['price']}**")
+            
+            if st.button(f"Add to Cart", key=f"b
