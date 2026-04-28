@@ -3,7 +3,7 @@ import requests
 
 # --- 1. CONFIG & LOGO ---
 # I've updated the URL logic to be more robust
-LOGO_URL = "https://postimg.cc/67CFqmBP/logo.png"
+LOGO_URL = "https://i.postimg.cc/ZqQmfG2J/Whats-App-Image-2026-04-28-at-18-05-28-(1).jpg"
 
 st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
