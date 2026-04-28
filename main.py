@@ -1,9 +1,11 @@
 import streamlit as st
 import requests
 
-# --- 1. LOGO & BRANDING ---
-# You can use a local file path like "logo.png" or a direct URL
-LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png" 
+# --- 1. CONFIG & LOGO ---
+# I've updated the URL logic to be more robust
+LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png"
+
+st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
 # --- 2. PRODUCT DATABASE ---
 products = [
@@ -19,29 +21,79 @@ colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk 
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
-
-# --- 4. DISPLAY LOGO ---
-# Option A: Sidebar Logo (This appears at the top of the sidebar)
-st.logo(LOGO_URL, icon_image=LOGO_URL) 
-
-# --- 5. SIDEBAR NAVIGATION ---
+# --- 4. SIDEBAR ---
+# We use st.sidebar.image instead of st.logo for better compatibility
+st.sidebar.image(LOGO_URL, use_container_width=True)
 st.sidebar.title("🛠️ Luca's 3D Lab")
 menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
 
-# Sidebar Cart Display...
-# (Rest of your sidebar logic remains the same)
+st.sidebar.divider()
+st.sidebar.subheader("🛒 Your Cart")
+if not st.session_state.cart:
+    st.sidebar.write("Empty")
+else:
+    for item in st.session_state.cart:
+        st.sidebar.write(f"**{item['display_name']}** (€{item['price']})")
+    if st.sidebar.button("🗑️ Clear Cart"):
+        st.session_state.cart = []
+        st.rerun()
 
-# --- 6. MAIN PAGE LOGO ---
+# --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
-    # Option B: Main Page Logo (Centered or Left-aligned)
-    col_logo, col_text = st.columns([1, 4])
-    with col_logo:
-        st.image(LOGO_URL, width=100) # Adjust width as needed
-    with col_text:
-        st.title("🚀 Luca's Custom 3D Prints")
+    # Header with Logo
+    col_l, col_r = st.columns([1, 6])
+    with col_l:
+        st.image(LOGO_URL, width=80)
+    with col_r:
+        st.title("Luca's Custom 3D Prints")
     
     st.write("Pick a model, choose your color, and add it to your cart!")
+    st.divider()
 
-    # (Rest of your product grid logic remains the same)
-    # ...
+    # Product Grid
+    col1, col2 = st.columns(2)
+    for i, p in enumerate(products):
+        with (col1 if i % 2 == 0 else col2):
+            st.image(p["img"], use_container_width=True)
+            st.subheader(p["name"])
+            sel_color = st.selectbox(f"Color for {p['name']}", colors, key=f"c_{i}")
+            st.write(f"**Price: €{p['price']}**")
+            
+            if st.button(f"Add {p['name']} to Cart", key=f"b_{i}"):
+                st.session_state.cart.append({
+                    "display_name": f"{p['name']} ({sel_color})",
+                    "price": p["price"]
+                })
+                st.toast(f"Added {p['name']}!")
+                st.rerun()
+
+# --- 6. PAGE: CHECKOUT ---
+elif menu == "Checkout":
+    st.title("💳 Checkout")
+    if not st.session_state.cart:
+        st.info("Cart is empty.")
+    else:
+        total = sum(item['price'] for item in st.session_state.cart)
+        st.write("### Order Summary:")
+        for item in st.session_state.cart:
+            st.write(f"- {item['display_name']}: €{item['price']}")
+        st.divider()
+        st.write(f"## Total: €{total}")
+        
+        # Payment Logic
+        if st.button("🚀 Pay with Apple Pay / Card", type="primary"):
+            rev_key = st.secrets.get("REVOLUT_SECRET_KEY", "missing")
+            if rev_key == "missing":
+                st.error("Add your REVOLUT_SECRET_KEY to Streamlit Secrets!")
+            else:
+                try:
+                    payload = {"amount": int(total * 100), "currency": "EUR", "description": "3D Print Order"}
+                    headers = {"Authorization": f"Bearer {rev_key}", "Content-Type": "application/json"}
+                    res = requests.post("https://merchant.revolut.com/api/1.0/orders", json=payload, headers=headers)
+                    data = res.json()
+                    if "public_id" in data:
+                        st.link_button("Go to Payment", f"https://checkout.revolut.com/payment?public_id={data['public_id']}")
+                    else:
+                        st.error(f"Error: {data}")
+                except Exception as e:
+                    st.error(f"Failed: {e}")
