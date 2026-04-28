@@ -3,7 +3,7 @@ import requests
 
 # --- 1. LOGO & BRANDING ---
 # You can use a local file path like "logo.png" or a direct URL
-LOGO_URL = ""https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png" 
+LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png" 
 
 # --- 2. PRODUCT DATABASE ---
 products = [
