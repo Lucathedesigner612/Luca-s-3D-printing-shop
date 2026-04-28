@@ -3,7 +3,7 @@ import requests
 
 # --- 1. CONFIG & LOGO ---
 # I've updated the URL logic to be more robust
-LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png"
+LOGO_URL = "https://postimg.cc/67CFqmBP/logo.png"
 
 st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
