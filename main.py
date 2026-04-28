@@ -3,7 +3,7 @@ import requests
 
 # --- 1. LOGO & BRANDING ---
 # You can use a local file path like "logo.png" or a direct URL
-LOGO_URL = "blob:https://web.whatsapp.com/10757af3-819e-4d1e-8302-8b56dfb039b3" 
+LOGO_URL = "https://ibb.co/8gCxK0xC" 
 
 # --- 2. PRODUCT DATABASE ---
 products = [
