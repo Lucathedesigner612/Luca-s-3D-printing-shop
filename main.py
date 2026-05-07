@@ -22,23 +22,47 @@ colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk 
 # --- 3. SESSION STATE ---
 if "cart" not in st.session_state:
     st.session_state.cart = []
-
-# --- 4. SIDEBAR ---
-# We use st.sidebar.image instead of st.logo for better compatibility
-st.sidebar.image(LOGO_URL, use_container_width=True)
-st.sidebar.title("🛠️ Luca's 3D Lab")
-menu = st.sidebar.radio("Navigation", ["Browse Catalog", "Checkout"])
+# --- SIDEBAR NAVIGATION & CART ---
+# (Your existing code for menu and cart goes here...)
 
 st.sidebar.divider()
-st.sidebar.subheader("🛒 Your Cart")
-if not st.session_state.cart:
-    st.sidebar.write("Empty")
-else:
-    for item in st.session_state.cart:
-        st.sidebar.write(f"**{item['display_name']}** (€{item['price']})")
-    if st.sidebar.button("🗑️ Clear Cart"):
-        st.session_state.cart = []
-        st.rerun()
+st.sidebar.subheader("✉️ Custom Request")
+st.sidebar.write("Want something special? Send Luca a message!")
+
+# 1. Create the Form
+with st.sidebar.form("contact_form", clear_on_submit=True):
+    email = st.text_input("Your Email Address")
+    message = st.text_area("Describe your project (size, color, use)")
+    
+    # Optional: Link to a file or model if they have one
+    model_link = st.text_input("Link to 3D Model (optional)")
+    
+    submit_button = st.form_submit_button("Send Message")
+
+# 2. Handle the Submission
+if submit_button:
+    if not email or not message:
+        st.sidebar.error("Please provide your email and a message.")
+    else:
+        # FormSubmit endpoint (Free)
+        # Change 'your-email@gmail.com' to your actual email address!
+        contact_url = "https://formsubmit.co/ajax/your-email@gmail.com"
+        
+        payload = {
+            "email": email,
+            "message": message,
+            "model_link": model_link,
+            "_subject": "New Custom 3D Print Request!"
+        }
+        
+        try:
+            response = requests.post(contact_url, data=payload)
+            if response.status_code == 200:
+                st.sidebar.success("Message sent! Luca will email you back soon.")
+            else:
+                st.sidebar.error("Failed to send. Try again later.")
+        except Exception as e:
+            st.sidebar.error(f"Error: {e}")
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
     st.title("Luca's Custom 3D Prints")
