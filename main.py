@@ -72,7 +72,7 @@ with st.sidebar.form("contact_form", clear_on_submit=True):
     if u_submit:
         if u_email and u_msg:
             # Change this to your real email
-            requests.post("https://formsubmit.co/ajax/your-email@gmail.com", 
+            requests.post("lucagalea612@gmail.com", 
                           data={"email": u_email, "message": u_msg})
             st.sidebar.success("Message sent!")
         else:
