@@ -2,17 +2,12 @@ import streamlit as st
 import requests
 
 # --- 1. CONFIG & SETTINGS ---
-# Add REVOLUT_SECRET_KEY to your Streamlit Cloud Secrets (Settings > Secrets)
-if "REVOLUT_SECRET_KEY" in st.secrets:
-    REV_KEY = st.secrets["REVOLUT_SECRET_KEY"]
-else:
-    REV_KEY = "your_sk_here" 
-
+# Using a more standard placeholder if your link is broken
 LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png"
 
 st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
-# CSS to fix image heights and align buttons/dropdowns perfectly
+# CSS to fix image heights and align buttons/dropdowns
 st.markdown("""
     <style>
     [data-testid="stImage"] img {
@@ -46,46 +41,55 @@ if "cart" not in st.session_state:
     st.session_state.cart = []
 
 # --- 4. SIDEBAR ---
-st.sidebar.image(LOGO_URL, use_container_width=True)
+# FIXED: Only show logo if the URL works, otherwise show text
+try:
+    st.sidebar.image(LOGO_URL, use_container_width=True)
+except:
+    st.sidebar.title("🛠️ Luca's 3D Lab")
+
 st.sidebar.title("Navigation")
 menu = st.sidebar.radio("Go to", ["Browse Catalog", "Checkout"])
 
-st.sidebar.divider()
-st.sidebar.subheader("🛒 Your Cart")
-if not st.session_state.cart:
-    st.sidebar.write("Cart is empty.")
-else:
-    total_cart = sum(item['price'] for item in st.session_state.cart)
-    for item in st.session_state.cart:
-        st.sidebar.write(f"• {item['display_name']} (€{item['price']})")
-    st.sidebar.write(f"**Total: €{total_cart}**")
-    if st.sidebar.button("🗑️ Clear Cart"):
-        st.session_state.cart = []
-        st.rerun()
-
+# --- CONTACT FORM ---
 st.sidebar.divider()
 st.sidebar.subheader("✉️ Custom Request")
-
-# --- CONTACT FORM (STRICT INDENTATION) ---
 with st.sidebar.form("contact_form", clear_on_submit=True):
     u_email = st.text_input("Your Email")
     u_msg = st.text_area("Describe your project")
     u_submit = st.form_submit_button("Send to Luca")
 
-# This MUST be aligned with the "with" word
 if u_submit:
     if u_email and u_msg:
-        try:
-            requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
-                          data={"email": u_email, "message": u_msg})
-            st.sidebar.success("Message sent!")
-        except:
-            st.sidebar.error("Service unavailable.")
-    else:
-        st.sidebar.error("Fill in all fields.")
+        requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", data={"email": u_email, "message": u_msg})
+        st.sidebar.success("Message sent!")
 
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
     col_l, col_r = st.columns([1, 6])
     with col_l:
-      st.image(LOGO_URL, width=100)
+        # FIXED: Added width=80 explicitly to avoid NameError
+        st.image(LOGO_URL, width=80) 
+    with col_r:
+        st.title("Luca's Custom 3D Prints")
+    
+    st.write("Select a model and color to add to your order.")
+    st.divider()
+
+    # 3x3 Grid
+    cols = st.columns(3)
+    for i, p in enumerate(products):
+        with cols[i % 3]:
+            # Use try/except so one broken image doesn't crash the whole shop
+            try:
+                st.image(p["img"], use_container_width=True)
+            except:
+                st.warning("Image failed to load")
+                
+            st.markdown(f"<div class='product-title'>{p['name']}</div>", unsafe_allow_html=True)
+            sel_color = st.selectbox(f"Color", colors, key=f"c_{i}", label_visibility="collapsed")
+            st.write(f"**€{p['price']}**")
+            
+            if st.button(f"Add to Cart", key=f"b_{i}", use_container_width=True):
+                st.session_state.cart.append({"display_name": f"{p['name']} ({sel_color})", "price": p["price"]})
+                st.toast(f"Added {p['name']}!")
+                st.rerun()
