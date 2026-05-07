@@ -69,15 +69,14 @@ with st.sidebar.form("contact_form", clear_on_submit=True):
     u_email = st.text_input("Your Email")
     u_msg = st.text_area("Describe your project")
     u_submit = st.form_submit_button("Send to Luca")
-    if u_submit:
-        if u_email and u_msg:
-            # Change this to your real email
-            requests.post("lucagalea612@gmail.com", 
-                          data={"email": u_email, "message": u_msg})
-            st.sidebar.success("Message sent!")
-        else:
-            st.sidebar.error("Fill in all fields.")
-
+   if u_submit:
+    if u_email and u_msg:
+        # Corrected URL below:
+        requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+                      data={"email": u_email, "message": u_msg})
+        st.sidebar.success("Message sent!")
+    else:
+        st.sidebar.error("Fill in all fields.")
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
     col_l, col_r = st.columns([1, 6])
