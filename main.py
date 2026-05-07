@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # --- 1. CONFIG & SETTINGS ---
-# To make Apple Pay work, add REVOLUT_SECRET_KEY to your Streamlit Cloud Secrets
+# Add REVOLUT_SECRET_KEY to your Streamlit Cloud Secrets (Settings > Secrets)
 if "REVOLUT_SECRET_KEY" in st.secrets:
     REV_KEY = st.secrets["REVOLUT_SECRET_KEY"]
 else:
@@ -45,7 +45,7 @@ colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk 
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-# --- 4. SIDEBAR (Navigation, Cart, & Contact) ---
+# --- 4. SIDEBAR ---
 st.sidebar.image(LOGO_URL, use_container_width=True)
 st.sidebar.title("Navigation")
 menu = st.sidebar.radio("Go to", ["Browse Catalog", "Checkout"])
@@ -65,12 +65,14 @@ else:
 
 st.sidebar.divider()
 st.sidebar.subheader("✉️ Custom Request")
+
+# --- CONTACT FORM (STRICT INDENTATION) ---
 with st.sidebar.form("contact_form", clear_on_submit=True):
     u_email = st.text_input("Your Email")
     u_msg = st.text_area("Describe your project")
     u_submit = st.form_submit_button("Send to Luca")
 
-# Logic for sending the form (Must be OUTSIDE the 'with' block, aligned with 'with')
+# This MUST be aligned with the "with" word
 if u_submit:
     if u_email and u_msg:
         try:
@@ -86,61 +88,4 @@ if u_submit:
 if menu == "Browse Catalog":
     col_l, col_r = st.columns([1, 6])
     with col_l:
-        st.image(LOGO_URL, width=80)
-    with col_r:
-        st.title("Luca's Custom 3D Prints")
-    
-    st.write("Select a model and color to add to your order.")
-    st.divider()
-
-    # 3x3 Grid Logic
-    cols = st.columns(3)
-    for i, p in enumerate(products):
-        with cols[i % 3]:
-            st.image(p["img"], use_container_width=True)
-            st.markdown(f"<div class='product-title'>{p['name']}</div>", unsafe_allow_html=True)
-            
-            sel_color = st.selectbox(f"Color", colors, key=f"c_{i}", label_visibility="collapsed")
-            st.write(f"**€{p['price']}**")
-            
-            if st.button(f"Add to Cart", key=f"b_{i}", use_container_width=True):
-                st.session_state.cart.append({
-                    "display_name": f"{p['name']} ({sel_color})",
-                    "price": p["price"]
-                })
-                st.toast(f"Added {p['name']}!")
-                st.rerun()
-            st.write("") # Spacer
-
-# --- 6. PAGE: CHECKOUT ---
-elif menu == "Checkout":
-    st.title("💳 Secure Checkout")
-    if not st.session_state.cart:
-        st.info("Your cart is empty.")
-    else:
-        st.write("### Review Your Order:")
-        total = sum(item['price'] for item in st.session_state.cart)
-        for item in st.session_state.cart:
-            st.write(f"- {item['display_name']}: €{item['price']}")
-        
-        st.divider()
-        st.write(f"## Total Amount: €{total}")
-
-        if st.button("🚀 Pay with Apple Pay / Card", type="primary", use_container_width=True):
-            if REV_KEY == "your_sk_here":
-                st.error("Please set your REVOLUT_SECRET_KEY in Streamlit Secrets.")
-            else:
-                try:
-                    payload = {"amount": int(total * 100), "currency": "EUR", "description": "3D Shop Order"}
-                    headers = {"Authorization": f"Bearer {REV_KEY}", "Content-Type": "application/json"}
-                    res = requests.post("https://merchant.revolut.com/api/1.0/orders", json=payload, headers=headers)
-                    data = res.json()
-                    
-                    if "public_id" in data:
-                        pay_url = f"https://checkout.revolut.com/payment?public_id={data['public_id']}"
-                        st.link_button("Confirm & Pay Now", pay_url, use_container_width=True)
-                        st.info("Apple Pay will be available on the payment page.")
-                    else:
-                        st.error(f"Revolut Error: {data.get('message', 'Check API Key')}")
-                except Exception as e:
-                    st.error(f"Connection failed: {e}")
+        st.image(LOGO_URL, width
