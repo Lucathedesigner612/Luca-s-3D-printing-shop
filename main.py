@@ -14,6 +14,7 @@ products = [
     {"name": "Gatling gun", "price": 30, "img": "https://makerworld.bblmw.com/makerworld/model/US92c5fd98860546/design/2025-01-20_b0744fb62f5f2.gif?x-oss-process=image/resize,w_1000/format,webp"},
     {"name": "BB-ammo", "price": 0.50, "img": "https://makerworld.bblmw.com/makerworld/model/US14a586903f14f8/design/2025-05-15_b41c34cbd23cb.jpg?x-oss-process=image/resize,w_1000/format,webp"},
     {"name": "Suzuki hayabuza gen-2", "price": 50, "img": "https://i.postimg.cc/sXdzdt9h/Whats-App-Image-2026-04-26-at-11-12-31.jpg"}
+    {"name": "JBL XTREME 3 Holder", "price": 10, "img": "https://makerworld.bblmw.com/makerworld/model/USfc9347493e1889/design/2025-08-22_3ffac4e1f6c888.jpg?x-oss-process=image/resize,w_1000/format,webp"}
 ]
 
 colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk Gold", "🟢 Apple Green"]
