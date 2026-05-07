@@ -88,4 +88,4 @@ if u_submit:
 if menu == "Browse Catalog":
     col_l, col_r = st.columns([1, 6])
     with col_l:
-        st.image(LOGO_URL, width)
+      st.image(LOGO_URL, width=100)
