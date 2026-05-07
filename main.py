@@ -51,23 +51,29 @@ if menu == "Browse Catalog":
     st.write("Pick a model, choose your color, and add it to your cart!")
     st.divider()
 
-    # Product Grid
-    col1, col2 = st.columns(2)
+    # --- THE 3x3 GRID LOGIC ---
+    # This creates 3 columns
+    cols = st.columns(3) 
+
     for i, p in enumerate(products):
-        with (col1 if i % 2 == 0 else col2):
+        # The % 3 math ensures the items cycle through col 0, 1, and 2
+        with cols[i % 3]: 
             st.image(p["img"], use_container_width=True)
             st.subheader(p["name"])
-            sel_color = st.selectbox(f"Color for {p['name']}", colors, key=f"c_{i}")
+            
+            sel_color = st.selectbox(f"Color", colors, key=f"c_{i}")
             st.write(f"**Price: €{p['price']}**")
             
-            if st.button(f"Add {p['name']} to Cart", key=f"b_{i}"):
+            if st.button(f"Add to Cart", key=f"b_{i}", use_container_width=True):
                 st.session_state.cart.append({
                     "display_name": f"{p['name']} ({sel_color})",
                     "price": p["price"]
                 })
                 st.toast(f"Added {p['name']}!")
                 st.rerun()
-
+            
+            # Adds a little spacing between rows
+            st.write("")
 # --- 6. PAGE: CHECKOUT ---
 elif menu == "Checkout":
     st.title("💳 Checkout")
