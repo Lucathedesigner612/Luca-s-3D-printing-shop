@@ -38,28 +38,36 @@ else:
     if st.sidebar.button("🗑️ Clear Cart"):
         st.session_state.cart = []
         st.rerun()
-
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
-    # Header logic (Keep your logo and title here)
     st.title("Luca's Custom 3D Prints")
+    
+    # CSS to force all product images to the same height and crop them
+    st.markdown("""
+        <style>
+        [data-testid="stImage"] img {
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
     st.write("Pick a model, choose your color, and add it to your cart!")
     st.divider()
 
-    # --- THE FIXED GRID LOGIC ---
+    # Create the 3-column grid
     cols = st.columns(3) 
 
     for i, p in enumerate(products):
         with cols[i % 3]:
-            # 1. Image with fixed height (Prevents the 'staggered' look)
-            # Note: This might slightly stretch/squish images if they aren't square,
-            # but it is the only way to keep the buttons perfectly lined up.
+            # The CSS above handles the height, so we just display the image
             st.image(p["img"], use_container_width=True)
             
-            # 2. Use a container for the text/buttons to keep them at the same level
-            with st.container(border=True):
-                # We use a fixed height for the name to handle long titles
-                st.markdown(f"<div style='height: 50px; font-weight: bold;'>{p['name']}</div>", unsafe_allow_html=True)
+            # We wrap the info in a container to keep it neat
+            with st.container():
+                # Force the name to take up exactly two lines so prices align
+                st.markdown(f"<div style='height: 50px; overflow: hidden;'><b>{p['name']}</b></div>", unsafe_allow_html=True)
                 
                 sel_color = st.selectbox(f"Color", colors, key=f"c_{i}", label_visibility="collapsed")
                 st.write(f"**€{p['price']}**")
@@ -71,6 +79,7 @@ if menu == "Browse Catalog":
                     })
                     st.toast(f"Added {p['name']}!")
                     st.rerun()
+            st.write("---") # Adds a separator for mobile users
 # --- 6. PAGE: CHECKOUT ---
 elif menu == "Checkout":
     st.title("💳 Checkout")
