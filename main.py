@@ -32,13 +32,15 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 2. PRODUCT DATABASE ---
+# --- 2. PRODUCT DATABASE (Local Files) ---
 products = [
-    {"name": "BB-gun", "price": 25, "img": "https://makerworld.bblmw.com/makerworld/model/US18955f0fc513e5/design/2024-01-03_201b2ae71df09.jpg?x-oss-process=image/resize,w_1000/format,webp"},
-    {"name": "6mm Cartridge", "price": 5, "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg"},
-    {"name": "Gatling gun", "price": 30, "img": "https://makerworld.bblmw.com/makerworld/model/US92c5fd98860546/design/2025-01-20_b0744fb62f5f2.gif?x-oss-process=image/resize,w_1000/format,webp"},
-    {"name": "BB-ammo", "price": 0.50, "img": "https://makerworld.bblmw.com/makerworld/model/US14a586903f14f8/design/2025-05-15_b41c34cbd23cb.jpg?x-oss-process=image/resize,w_1000/format,webp"},
-    {"name": "Hayabusa Motorcycle", "price": 45, "img": "https://makerworld.bblmw.com/makerworld/model/US095904d60c41/design/2024-06-12_6d8f8a8b8b8b8.jpg"}
+    {"name": "BB-gun", "price": 25, "img": "gun.jpg"},
+    {"name": "6mm Cartridge", "price": 5, "img": "cartridge.jpg"},
+    {"name": "Gatling gun", "price": 30, "img": "gatling.jpg"},
+    {"name": "BB-ammo", "price": 0.50, "img": "ammo.jpg"},
+    {"name": "Hayabusa Motorcycle", "price": 45, "img": "bike.jpg"}
 ]
+
 
 colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk Gold", "🟢 Apple Green"]
 
