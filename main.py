@@ -66,7 +66,7 @@ if u_submit:
         try:
             # This sends the data to FormSubmit, which forwards it to you
            # Make sure it says /ajax/ and has your full email
-requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+           requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
               data={"Customer Email": u_email, "Message": u_msg})
                
             
