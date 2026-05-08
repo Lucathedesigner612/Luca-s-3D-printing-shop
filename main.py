@@ -57,4 +57,4 @@ menu = st.sidebar.radio("Go to", ["Browse Catalog", "Checkout"])
 
 st.sidebar.divider()
 st.sidebar.subheader("🛒 Your Cart")
-if not st.session_state.cart
+if not st.session_state.cart:
