@@ -53,15 +53,34 @@ menu = st.sidebar.radio("Go to", ["Browse Catalog", "Checkout"])
 # --- CONTACT FORM ---
 st.sidebar.divider()
 st.sidebar.subheader("✉️ Custom Request")
-with st.sidebar.form("contact_form", clear_on_submit=True):
-    u_email = st.text_input("Your Email")
-    u_msg = st.text_area("Describe your project")
-    u_submit = st.form_submit_button("Send to Luca")
 
+# The Form
+with st.sidebar.form("contact_form", clear_on_submit=True):
+    u_email = st.text_input("Your Email (so Luca can reply)")
+    u_msg = st.text_area("What would you like me to print?")
+    u_submit = st.form_submit_button("Send Request")
+
+# The Logic (Aligned with 'with')
 if u_submit:
     if u_email and u_msg:
-        requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", data={"email": u_email, "message": u_msg})
-        st.sidebar.success("Message sent!")
+        try:
+            # This sends the data to FormSubmit, which forwards it to you
+            response = requests.post(
+                "https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+                data={
+                    "Customer Email": u_email, 
+                    "Message": u_msg,
+                    "_subject": "New 3D Print Request from Shop!" # Custom email subject
+                }
+            )
+            if response.status_code == 200:
+                st.sidebar.success("Sent! Check your email soon, Luca will reply.")
+            else:
+                st.sidebar.error("Send failed. Please try again.")
+        except Exception as e:
+            st.sidebar.error("Could not connect to the mail server.")
+    else:
+        st.sidebar.error("Please fill in both fields!")
 
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
