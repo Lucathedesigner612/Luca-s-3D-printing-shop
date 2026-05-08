@@ -65,13 +65,10 @@ if u_submit:
     if u_email and u_msg:
         try:
             # This sends the data to FormSubmit, which forwards it to you
-            response = requests.post(
-                "https://formsubmit.co/ajax/lucagalea612@gmail.com", 
-                data={
-                    "Customer Email": u_email, 
-                    "Message": u_msg,
-                    "_subject": "New 3D Print Request from Shop!" # Custom email subject
-                }
+           # Make sure it says /ajax/ and has your full email
+requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+              data={"Customer Email": u_email, "Message": u_msg})
+               
             )
             if response.status_code == 200:
                 st.sidebar.success("Sent! Check your email soon, Luca will reply.")
