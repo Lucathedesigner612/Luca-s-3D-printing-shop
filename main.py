@@ -69,7 +69,7 @@ if u_submit:
 requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
               data={"Customer Email": u_email, "Message": u_msg})
                
-            )
+            
             if response.status_code == 200:
                 st.sidebar.success("Sent! Check your email soon, Luca will reply.")
             else:
