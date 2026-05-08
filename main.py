@@ -66,7 +66,7 @@ if u_submit:
     if u_email and u_msg:
         try:
             # Level 2 (8 spaces)
-            response = requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+            response = requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com"", 
                                      data={"email": u_email, "message": u_msg})
             
             # Line 73 - Level 2 (8 spaces) - MUST match the 'response =' line above!
