@@ -60,25 +60,22 @@ with st.sidebar.form("contact_form", clear_on_submit=True):
     u_msg = st.text_area("What would you like me to print?")
     u_submit = st.form_submit_button("Send Request")
 
-# The Logic (Aligned with 'with')
+# Level 0 (No spaces)
 if u_submit:
+    # Level 1 (4 spaces)
     if u_email and u_msg:
         try:
-            # This sends the data to FormSubmit, which forwards it to you
-           # Make sure it says /ajax/ and has your full email
-           requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
-              data={"Customer Email": u_email, "Message": u_msg})
-               
+            # Level 2 (8 spaces)
+            response = requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+                                     data={"email": u_email, "message": u_msg})
             
+            # Line 73 - Level 2 (8 spaces) - MUST match the 'response =' line above!
             if response.status_code == 200:
-                st.sidebar.success("Sent! Check your email soon, Luca will reply.")
+                st.sidebar.success("Sent! Luca will reply soon.")
             else:
-                st.sidebar.error("Send failed. Please try again.")
-        except Exception as e:
-            st.sidebar.error("Could not connect to the mail server.")
-    else:
-        st.sidebar.error("Please fill in both fields!")
-
+                st.sidebar.error("Failed to send.")
+        except:
+            st.sidebar.error("Connection error.")
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
     col_l, col_r = st.columns([1, 6])
