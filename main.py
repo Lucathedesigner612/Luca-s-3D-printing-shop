@@ -2,12 +2,18 @@ import streamlit as st
 import requests
 
 # --- 1. CONFIG & SETTINGS ---
-# Using a more standard placeholder if your link is broken
+# Set your Revolut Secret Key in the "Secrets" tab of Streamlit Cloud
+if "REVOLUT_SECRET_KEY" in st.secrets:
+    REV_KEY = st.secrets["REVOLUT_SECRET_KEY"]
+else:
+    REV_KEY = "your_sk_here" 
+
+# If this link fails, upload 'logo.png' to GitHub and change this to "logo.png"
 LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png"
 
 st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
-# CSS to fix image heights and align buttons/dropdowns
+# CSS: This fixes image heights, crops them neatly, and aligns buttons
 st.markdown("""
     <style>
     [data-testid="stImage"] img {
@@ -36,73 +42,56 @@ products = [
 
 colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk Gold", "🟢 Apple Green"]
 
-# --- 3. SESSION STATE ---
+# --- 3. SESSION STATE (CART) ---
 if "cart" not in st.session_state:
     st.session_state.cart = []
 
-# --- 4. SIDEBAR ---
-# FIXED: Only show logo if the URL works, otherwise show text
+# --- 4. SIDEBAR (Navigation, Cart & Contact) ---
 try:
     st.sidebar.image(LOGO_URL, use_container_width=True)
 except:
-    st.sidebar.title("🛠️ Luca's 3D Lab")
+    st.sidebar.header("🛠️ Luca's 3D Lab")
 
 st.sidebar.title("Navigation")
 menu = st.sidebar.radio("Go to", ["Browse Catalog", "Checkout"])
 
-# --- CONTACT FORM ---
+st.sidebar.divider()
+st.sidebar.subheader("🛒 Your Cart")
+if not st.session_state.cart:
+    st.sidebar.write("Cart is empty.")
+else:
+    total_cart = sum(item['price'] for item in st.session_state.cart)
+    for item in st.session_state.cart:
+        st.sidebar.write(f"• {item['display_name']} (€{item['price']})")
+    st.sidebar.write(f"**Total: €{total_cart}**")
+    if st.sidebar.button("🗑️ Clear Cart"):
+        st.session_state.cart = []
+        st.rerun()
+
 st.sidebar.divider()
 st.sidebar.subheader("✉️ Custom Request")
 
-# The Form
+# CONTACT FORM - Fixed Indentation
 with st.sidebar.form("contact_form", clear_on_submit=True):
-    u_email = st.text_input("Your Email (so Luca can reply)")
-    u_msg = st.text_area("What would you like me to print?")
-    u_submit = st.form_submit_button("Send Request")
+    u_email = st.text_input("Your Email")
+    u_msg = st.text_area("Describe your project")
+    u_submit = st.form_submit_button("Send to Luca")
 
-# Level 0 (No spaces)
+# Send Logic - Aligned with the 'with' block
 if u_submit:
-    # Level 1 (4 spaces)
     if u_email and u_msg:
         try:
-            # Level 2 (8 spaces)
-            response = requests.post("https://formsubmit.co/ajax/lucagalea612@gmail.com", 
-                                     data={"email": u_email, "message": u_msg})
-            
-            # Line 73 - Level 2 (8 spaces) - MUST match the 'response =' line above!
+            response = requests.post(
+                "https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+                data={"email": u_email, "message": u_msg}
+            )
             if response.status_code == 200:
-                st.sidebar.success("Sent! Luca will reply soon.")
+                st.sidebar.success("Sent! Check your email to confirm.")
             else:
                 st.sidebar.error("Failed to send.")
         except:
-            st.sidebar.error("Connection error.")
-# --- 5. PAGE: BROWSE CATALOG ---
-if menu == "Browse Catalog":
-    col_l, col_r = st.columns([1, 6])
-    with col_l:
-        # FIXED: Added width=80 explicitly to avoid NameError
-        st.image(LOGO_URL, width=80) 
-    with col_r:
-        st.title("Luca's Custom 3D Prints")
-    
-    st.write("Select a model and color to add to your order.")
-    st.divider()
+            st.sidebar.error("Service unavailable.")
+    else:
+        st.sidebar.error("Fill in all fields.")
 
-    # 3x3 Grid
-    cols = st.columns(3)
-    for i, p in enumerate(products):
-        with cols[i % 3]:
-            # Use try/except so one broken image doesn't crash the whole shop
-            try:
-                st.image(p["img"], use_container_width=True)
-            except:
-                st.warning("Image failed to load")
-                
-            st.markdown(f"<div class='product-title'>{p['name']}</div>", unsafe_allow_html=True)
-            sel_color = st.selectbox(f"Color", colors, key=f"c_{i}", label_visibility="collapsed")
-            st.write(f"**€{p['price']}**")
-            
-            if st.button(f"Add to Cart", key=f"b_{i}", use_container_width=True):
-                st.session_state.cart.append({"display_name": f"{p['name']} ({sel_color})", "price": p["price"]})
-                st.toast(f"Added {p['name']}!")
-                st.rerun()
+# --- 5.
