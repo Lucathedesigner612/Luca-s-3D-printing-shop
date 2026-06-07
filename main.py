@@ -37,7 +37,7 @@ st.markdown("""
 # --- 2. PRODUCT DATABASE ---
 # Adjust the 'img' names to match the files you upload to GitHub
 products = [
-    {"name": "Japanese ONI Mask", "price": 25, "img": "hthttps://ibb.co/Qv9TSByh"},
+    {"name": "Japanese ONI Mask", "price": 25, "img": "https://ibb.co/Qv9TSByh"},
     {"name": "6mm Cartridge", "price": 5, "img": "cartridge.jpg"},
     {"name": "Gatling gun", "price": 30, "img": "gatling.jpg"},
     {"name": "BB-ammo", "price": 0.50, "img": "ammo.jpg"},
