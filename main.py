@@ -2,18 +2,18 @@ import streamlit as st
 import requests
 
 # --- 1. CONFIG & SETTINGS ---
-# Set your REVOLUT_SECRET_KEY in Streamlit Cloud Secrets
+# Set your REVOLUT_SECRET_KEY in the "Secrets" tab of Streamlit Cloud
 if "REVOLUT_SECRET_KEY" in st.secrets:
     REV_KEY = st.secrets["REVOLUT_SECRET_KEY"]
 else:
     REV_KEY = "your_sk_here" 
 
-# TIP: Upload 'logo.png' to your GitHub folder for this to work 100%
-LOGO_URL = "logo.png" 
+# PRO TIP: Upload 'logo.png' to GitHub and change this to "logo.png" for better reliability
+LOGO_URL = "https://kommodo.ai/i/89Px4YyuczTa43MwDSTJ/logo.png"
 
 st.set_page_config(page_title="Luca's 3D Lab", layout="wide", page_icon="🛠️")
 
-# CSS: Standardizing the Shop Appearance
+# CSS: Fixes image heights and aligns UI elements
 st.markdown("""
     <style>
     [data-testid="stImage"] img {
@@ -28,20 +28,16 @@ st.markdown("""
         line-height: 1.2;
         margin-top: 10px;
     }
-    .stButton>button {
-        border-radius: 20px;
-    }
     </style>
     """, unsafe_allow_html=True)
 
 # --- 2. PRODUCT DATABASE ---
-# Adjust the 'img' names to match the files you upload to GitHub
 products = [
-    {"name": "Japanese ONI Mask", "price": 25, "img": "blob:https://gemini.google.com/ee3b456a-b4b5-4af3-92ff-2f96784f22e5"},
-    {"name": "6mm Cartridge", "price": 5, "img": "cartridge.jpg"},
-    {"name": "Gatling gun", "price": 30, "img": "gatling.jpg"},
-    {"name": "BB-ammo", "price": 0.50, "img": "ammo.jpg"},
-    {"name": "Hayabusa Motorcycle", "price": 45, "img": "bike.jpg"}
+    {"name": "BB-gun", "price": 25, "img": "https://makerworld.bblmw.com/makerworld/model/US18955f0fc513e5/design/2024-01-03_201b2ae71df09.jpg?x-oss-process=image/resize,w_1000/format,webp"},
+    {"name": "6mm Cartridge", "price": 5, "img": "https://makerworld.bblmw.com/makerworld/model/US4eb0d6d10832a/design/2025-02-21_3d58e70697ae1.jpg"},
+    {"name": "Gatling gun", "price": 30, "img": "https://makerworld.bblmw.com/makerworld/model/US92c5fd98860546/design/2025-01-20_b0744fb62f5f2.gif?x-oss-process=image/resize,w_1000/format,webp"},
+    {"name": "BB-ammo", "price": 0.50, "img": "https://makerworld.bblmw.com/makerworld/model/US14a586903f14f8/design/2025-05-15_b41c34cbd23cb.jpg?x-oss-process=image/resize,w_1000/format,webp"},
+    {"name": "Hayabusa Motorcycle", "price": 45, "img": "https://makerworld.bblmw.com/makerworld/model/US095904d60c41/design/2024-06-12_6d8f8a8b8b8b8.jpg"}
 ]
 
 colors = ["🔴 Matte Red", "⚫ Stealth Black", "⚪ Glossy White", "🟡 Silk Gold", "🟢 Apple Green"]
@@ -54,7 +50,7 @@ if "cart" not in st.session_state:
 try:
     st.sidebar.image(LOGO_URL, use_container_width=True)
 except:
-    st.sidebar.title("🛠️ Luca's 3D Lab")
+    st.sidebar.header("🛠️ Luca's 3D Lab")
 
 st.sidebar.title("Navigation")
 menu = st.sidebar.radio("Go to", ["Browse Catalog", "Checkout"])
@@ -75,48 +71,54 @@ else:
 st.sidebar.divider()
 st.sidebar.subheader("✉️ Custom Request")
 
-# --- ADJUSTED CONTACT FORM ---
+# --- CONTACT FORM SECTION ---
+# Fixed indentation for the entire block
 with st.sidebar.form("contact_form", clear_on_submit=True):
     u_email = st.text_input("Your Email")
     u_msg = st.text_area("Describe your project")
     u_submit = st.form_submit_button("Send to Luca")
 
+# Logic must be OUTSIDE the 'with' block, aligned with the 'w' in 'with'
 if u_submit:
     if u_email and u_msg:
         try:
-            # ADJUSTMENT: Removing /ajax/ for the first send to force the redirect/activation
-            # Change back to "https://formsubmit.co/ajax/lucagalea612@gmail.com" after you confirm!
+            # Correct URL format for FormSubmit AJAX
             response = requests.post(
-                "https://formsubmit.co/lucagalea612@gmail.com", 
-                data={
-                    "Customer": u_email, 
-                    "Message": u_msg,
-                    "_captcha": "false" # Bypasses the robot check
-                }
+                "https://formsubmit.co/ajax/lucagalea612@gmail.com", 
+                data={"email": u_email, "message": u_msg}
             )
             if response.status_code == 200:
-                st.sidebar.success("Request processed! Check your email NOW.")
+                st.sidebar.success("Sent! Luca, check your inbox/spam now.")
             else:
-                st.sidebar.error("Error connecting to mail server.")
+                st.sidebar.error("Failed to send.")
         except:
             st.sidebar.error("Service unavailable.")
     else:
-        st.sidebar.error("Please fill in both fields.")
+        st.sidebar.error("Fill in all fields.")
 
 # --- 5. PAGE: BROWSE CATALOG ---
 if menu == "Browse Catalog":
-    st.title("Luca's Custom 3D Prints")
-    st.write("Pick a model, choose a color, and build your order.")
+    col_l, col_r = st.columns([1, 6])
+    with col_l:
+        # Fixed NameError by using width=80
+        try:
+            st.image(LOGO_URL, width=80) 
+        except:
+            st.write("🛠️")
+    with col_r:
+        st.title("Luca's Custom 3D Prints")
+    
+    st.write("Select a model and color to add to your order.")
     st.divider()
 
+    # 3x3 Grid Logic
     cols = st.columns(3)
     for i, p in enumerate(products):
         with cols[i % 3]:
-            # Image Fallback Logic
             try:
                 st.image(p["img"], use_container_width=True)
             except:
-                st.info(f"📸 Image: {p['img']} (Upload to GitHub to see)")
+                st.error("Image loading failed.")
                 
             st.markdown(f"<div class='product-title'>{p['name']}</div>", unsafe_allow_html=True)
             sel_color = st.selectbox(f"Color", colors, key=f"c_{i}", label_visibility="collapsed")
@@ -147,7 +149,7 @@ elif menu == "Checkout":
 
         if st.button("🚀 Pay with Apple Pay / Card", type="primary", use_container_width=True):
             if REV_KEY == "your_sk_here":
-                st.error("Please set your REVOLUT_SECRET_KEY in Streamlit Secrets.")
+                st.error("Set your REVOLUT_SECRET_KEY in Streamlit Secrets!")
             else:
                 try:
                     payload = {"amount": int(total * 100), "currency": "EUR", "description": "3D Shop Order"}
@@ -159,6 +161,6 @@ elif menu == "Checkout":
                         pay_url = f"https://checkout.revolut.com/payment?public_id={data['public_id']}"
                         st.link_button("Confirm & Pay Now", pay_url, use_container_width=True)
                     else:
-                        st.error("Revolut API configuration error.")
-                except:
-                    st.error("Payment system offline.")
+                        st.error(f"Revolut Error: {data.get('message', 'Check API Key')}")
+                except Exception as e:
+                    st.error(f"Payment failed: {e}")
